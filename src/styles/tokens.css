@@ -1,24 +1,55 @@
 /* src/styles/tokens.css */
 /**
  * Nicomatic Sénégal - Design Tokens
- * Thème clair uniquement pour l'instant (color-scheme: light)
- * Variables CSS faciles à modifier et surcharger.
+ * Thème clair (color-scheme: light)
+ * Palette officielle extraite de reference/colors.png
  */
 :root {
   color-scheme: light;
 
-  /* Couleurs */
-  /* --brand : décoratif seulement, jamais en texte courant (contraste insuffisant sur fond blanc) */
+  /* === COULEUR ORIGINALE & BRAND === */
+  /* Premier bleu de la charte (original) : décoratif (traits, accents, puces) */
   --brand: #009ee0;
+
+  /* === NUANCES DE BLEU (TINTS - Éclaircissements de 90% à 10%) === */
+  --brand-tint-90: #19a8e3;
+  --brand-tint-80: #33b1e6;
+  --brand-tint-70: #4cbbe9;
+  --brand-tint-60: #66c5ec;
+  --brand-tint-50: #80cfef;
+  --brand-tint-40: #99d8f3;
+  --brand-tint-30: #b2e2f6;
+  --brand-tint-20: #ccecf9;
+  --brand-tint-10: #e5f5fc;
+
+  /* === NUANCES DE BLEU (SHADES - Assombrissements vers marine / nuit) === */
+  --brand-shade-100: #008eca;
+  --brand-shade-200: #007eb3;
+  --brand-shade-300: #006f9d;
+  --brand-shade-400: #005f86;
+  --brand-shade-500: #004f70;
+  --brand-shade-600: #003f5a;
+  --brand-shade-700: #002f43;
+  --brand-shade-800: #00202d;
+  --brand-shade-900: #001016;
+
+  /* === NEUTRES & GRIS DE LA CHARTE === */
+  --neutral-dark: #4b4d4f;
+  --neutral-mid: #b1b5b9;
+  --neutral-light: #dddfdf;
+  --neutral-subtle: #f8f9fa;
+  --neutral-white: #ffffff;
+
+  /* === HERO & ARRIÈRE-PLAN (TOTALEMENT BLANC) === */
   --hero-bg1: #ffffff;
-  --hero-bg2: #e8f4fb;
-  --hero-halo: rgba(0, 158, 224, 0.12);
+  --hero-bg2: #ffffff;
+  --hero-halo: transparent;
 
-  /* Typographie & contraste */
-  --ink: #0b2233;
-  --muted: #4a6577;
+  /* === TYPOGRAPHIE & CONTRASTE === */
+  --ink: #001016; /* Tiré de la teinte la plus sombre de la charte pour un contraste parfait */
+  --muted: #4b4d4f; /* Tiré du gris neutre foncé officiel */
 
-  /* Mouvement & durées */
+  /* === MOUVEMENT & TRANSITIONS === */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 400ms;
   --dur-base: 600ms;

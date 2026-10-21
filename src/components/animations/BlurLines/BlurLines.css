@@ -13,6 +13,7 @@
 
 .blur-line-item {
   display: block;
+  text-align: inherit;
   opacity: 0;
   filter: blur(10px);
   letter-spacing: 0.02em;

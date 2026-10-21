@@ -7,12 +7,25 @@
   }
 }
 
+.draw-rule-container {
+  display: flex;
+  width: 100%;
+}
+
+.draw-rule-container--center {
+  justify-content: center;
+}
+
+.draw-rule-container--left {
+  justify-content: flex-start;
+}
+
 .draw-rule-line {
   display: block;
   height: 2px;
   width: min(200px, 40%);
   background-color: var(--rule-color, var(--brand, #009ee0));
-  transform-origin: left center;
+  transform-origin: center;
   transform: scaleX(0);
   animation-name: drawRuleIn;
   animation-duration: var(--rule-duration, 900ms);
@@ -20,6 +33,10 @@
   animation-fill-mode: forwards;
   animation-delay: var(--rule-delay, 650ms);
   will-change: transform;
+}
+
+.draw-rule-container--left .draw-rule-line {
+  transform-origin: left center;
 }
 
 @media (prefers-reduced-motion: reduce) {

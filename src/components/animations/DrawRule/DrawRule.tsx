@@ -15,6 +15,10 @@ export interface DrawRuleProps {
    */
   color?: string;
   /**
+   * Alignement horizontal du trait ('center' ou 'left', défaut : 'center').
+   */
+  align?: 'center' | 'left';
+  /**
    * Classes CSS additionnelles.
    */
   className?: string;
@@ -24,21 +28,21 @@ export interface DrawRuleProps {
  * DrawRule (Server Component, CSS pur)
  *
  * Trait horizontal de 2 px d'épaisseur, largeur min(200px, 40%), couleur var(--brand).
- * S'étire de scaleX 0 à 1 depuis la gauche en 0,9 s avec un délai configurable (650 ms par défaut).
+ * S'étire de scaleX 0 à 1 en 0,9 s avec un délai configurable (650 ms par défaut).
  *
- * N'utilise aucun JavaScript et respecte les préférences de mouvement réduit.
+ * Supporte l'alignement centré ou gauche et respecte les préférences de mouvement réduit.
  */
 export function DrawRule({
   delayMs = 650,
   durationMs = 900,
   color = 'var(--brand)',
+  align = 'center',
   className = '',
 }: DrawRuleProps) {
   return (
     <div
       aria-hidden="true"
-      className={className}
-      style={{ overflow: 'hidden' }}
+      className={`draw-rule-container draw-rule-container--${align} ${className}`.trim()}
     >
       <span
         className="draw-rule-line"

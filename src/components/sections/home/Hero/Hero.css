@@ -6,8 +6,9 @@
   min-height: 100svh;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--hero-bg1) 0%, var(--hero-bg2) 100%);
+  background-color: #ffffff;
   padding-top: max(clamp(24px, 6vw, 96px), env(safe-area-inset-top));
   padding-bottom: max(clamp(24px, 6vw, 96px), env(safe-area-inset-bottom));
   padding-left: max(clamp(24px, 6vw, 96px), env(safe-area-inset-left));
@@ -18,18 +19,24 @@
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 46rem;
+  max-width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
-/* Voile de lisibilité discret assurant un contraste WCAG AA permanent */
+/* Voile de lisibilité discret assurant un contraste WCAG AA permanent, centré */
 .hero-text-veil {
   position: absolute;
-  inset: -3rem -4rem;
-  border-radius: 2.5rem;
+  inset: -3.5rem -4rem;
+  border-radius: 9999px;
   background: radial-gradient(
-    ellipse at 35% 50%,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.35) 55%,
+    ellipse at center,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.5) 60%,
     transparent 100%
   );
   pointer-events: none;
@@ -39,18 +46,20 @@
 .hero-title {
   margin: 0;
   font-size: clamp(2rem, 5vw, 4.2rem);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.08;
   letter-spacing: -0.02em;
   text-wrap: balance;
+  text-align: center;
   color: var(--ink);
 }
 
 .hero-eyebrow {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1.25rem 0;
   font-size: clamp(0.875rem, 1.2vw, 1.0625rem);
   font-weight: 500;
   line-height: 1.4;
   letter-spacing: normal;
+  text-align: center;
   color: var(--muted);
 }

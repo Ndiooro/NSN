@@ -22,11 +22,14 @@ Ce document rassemble les règles d'architecture et les conventions de développ
    - Les routes sont bilingues (`/fr` et `/en`), avec redirection automatique vers `/fr` par défaut.
    - Toujours employer l'apostrophe typographique (`’`) dans les chaînes françaises et anglaises.
 
-4. **Design Tokens centralisés** :
+4. **Design Tokens & Nuances Officielles (reference/colors.png)** :
    - Les couleurs, durées et courbes d'animation sont déclarées sous forme de variables CSS dans `src/styles/tokens.css`.
-   - Tailwind CSS est configuré pour consommer ces variables.
-   - Le thème actif est un thème clair (`color-scheme: light`).
-   - La couleur `--brand` (`#009ee0`) est décorative (traits, accents) et ne doit jamais être utilisée pour du texte courant sur fond clair (contraste WCAG insuffisant).
+   - **Premier bleu (original)** : `--brand: #009ee0` (décoratif, traits, badges).
+   - **Tints de bleu** : `--brand-tint-90` (`#19a8e3`) jusqu'à `--brand-tint-10` (`#e5f5fc`).
+   - **Shades de bleu** : `--brand-shade-100` (`#008eca`) jusqu'à `--brand-shade-900` (`#001016`).
+   - **Neutres** : `--neutral-dark` (`#4b4d4f`), `--neutral-mid` (`#b1b5b9`), `--neutral-light` (`#dddfdf`), `--neutral-subtle` (`#f8f9fa`).
+   - **Fond** : Totalement blanc (`#ffffff`).
+   - **Typographie de base** : Helvetica Now Display (fichiers `.woff2` dans `src/styles/fonts/`, déclarés dans `src/styles/fonts.ts`).
 
 ---
 
@@ -36,32 +39,33 @@ Ce document rassemble les règles d'architecture et les conventions de développ
 src/
 ├── app/
 │   └── [locale]/
-│       ├── layout.tsx       # Layout bilingue (HTML, polices, NextIntlClientProvider)
+│       ├── layout.tsx       # Layout bilingue (HTML, Helvetica Now Display, NextIntlClientProvider)
 │       └── page.tsx         # Page d'accueil (agrégation des sections Server Components)
 ├── components/
 │   ├── animations/          # Composants d'animation réutilisables (un dossier par animation)
 │   │   ├── Antigravity/     # Code source tiers React Bits (WebGL2 natif)
-│   │   ├── BlurLines/       # Révélation progressive de lignes de texte
-│   │   ├── DrawRule/        # Filet décoratif s'étirant depuis la gauche
+│   │   ├── BlurLines/       # Révélation progressive de lignes de texte (centré)
+│   │   ├── DrawRule/        # Filet décoratif étirable centré ou aligné à gauche
 │   │   ├── FadeIn/          # Fondu d'apparition simple
-│   │   ├── HeroBackground/  # Enveloppe client sécurisée pour Antigravity
+│   │   ├── HeroBackground/  # Enveloppe client sécurisée pour Antigravity sur fond blanc
 │   │   └── InView/          # Déclencheur au défilement (seuil 0.35)
 │   ├── sections/
 │   │   └── home/            # Une section par dossier (Hero/, puis Map/, Services/ ...)
-│   │       └── Hero/
+│   │       └── Hero/        # Section d'accueil centrée sur fond blanc
 │   └── ui/                  # Composants d'interface génériques (boutons, badges, liens)
 ├── i18n/
 │   ├── request.ts           # Configuration de chargement des messages par requête
 │   └── routing.ts           # Déclaration des langues et helpers de navigation
 ├── lib/                     # Hooks et utilitaires génériques (ex: useInView.ts)
 ├── styles/
-│   ├── fonts.ts             # Déclaration unique de la police (Bricolage Grotesque)
-│   ├── globals.css          # Styles globaux, Tailwind v4 et règles reduced-motion
-│   └── tokens.css           # Variables de design (couleurs, courbes, durées)
+│   ├── fonts/               # Polices woff2 (Helvetica Now Display)
+│   ├── fonts.ts             # Déclaration unique localFont (Helvetica Now Display)
+│   ├── globals.css          # Styles globaux, fond blanc et règles reduced-motion
+│   └── tokens.css           # Palette complète officielle (bleus, neutres, mouvement)
 messages/
 ├── fr.json                  # Traductions françaises (namespace Home.hero.*, Home.services.*)
 └── en.json                  # Traductions anglaises
-reference/                   # Fichiers sources et exports fournis (exclus du build TypeScript)
+reference/                   # Fichiers sources et exports fournis (colors.png, exports)
 docs/
 ├── ANIMATIONS.md            # Spécifications détaillées de chaque composant d'animation
 └── CONVENTIONS.md           # Ce guide d'architecture et conventions
@@ -108,10 +112,10 @@ docs/
      const title = propTitle ?? t('title');
 
      return (
-       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto text-center">
          <FadeIn>
            <p className="text-sm text-[var(--muted)]">{eyebrow}</p>
-           <h2 className="text-3xl font-semibold text-[var(--ink)] mt-2">{title}</h2>
+           <h2 className="text-3xl font-bold text-[var(--ink)] mt-2">{title}</h2>
          </FadeIn>
        </section>
      );
@@ -120,6 +124,7 @@ docs/
 
 4. **Intégrer la section dans `src/app/[locale]/page.tsx`** :
    ```tsx
+   import { Hero } from '@/components/sections/home/Hero/Hero';
    import { Services } from '@/components/sections/home/Services/Services';
 
    export default async function HomePage() {
@@ -134,29 +139,10 @@ docs/
 
 ---
 
-### Comment ajouter une nouvelle animation réutilisable ?
+### Comment utiliser la palette officielle de couleurs ?
 
-1. Créer un sous-dossier dans `src/components/animations/NomAnimation/`.
-2. Implémenter le composant avec des valeurs par défaut issues de `tokens.css`.
-3. Privilégier un Server Component avec des keyframes CSS pures si l'animation se joue à l'apparition.
-4. Gérer impérativement le repli pour l'accessibilité :
-   ```css
-   @media (prefers-reduced-motion: reduce) {
-     .mon-element-anime {
-       transform: none !important;
-       filter: none !important;
-       animation: none !important;
-     }
-   }
-   ```
-5. Documenter l'animation dans `docs/ANIMATIONS.md` (nom, rôle, props, déclencheur, mobile, reduced-motion, exemple).
-
----
-
-### Comment remplacer la typographie du projet ?
-
-La police est déclarée dans un unique fichier : `src/styles/fonts.ts`.
-Pour remplacer "Bricolage Grotesque" par une autre police (ex: Helvetica Now Display fournie dans `reference/` ou une police Google Fonts) :
-1. Modifier ou remplacer l'import dans `src/styles/fonts.ts`.
-2. Conserver la variable exportée `variable: '--font-sans'`.
-3. L'ensemble des styles et layouts du site s'adapteront immédiatement sans modification de balisage.
+Toutes les nuances de `reference/colors.png` sont directement accessibles en variables CSS :
+- Bleu original : `var(--brand)` (`#009ee0`)
+- Tints de bleu (clair vers très clair) : `var(--brand-tint-90)` à `var(--brand-tint-10)`
+- Shades de bleu (sombre vers nuit) : `var(--brand-shade-100)` à `var(--brand-shade-900)`
+- Neutres : `var(--neutral-dark)`, `var(--neutral-mid)`, `var(--neutral-light)`, `var(--neutral-subtle)`, `var(--neutral-white)`

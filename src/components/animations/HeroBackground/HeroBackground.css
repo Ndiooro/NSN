@@ -8,10 +8,8 @@
   overflow: hidden;
   z-index: 0;
   pointer-events: none;
-  /* Fond de repli CSS toujours présent : dégradé --hero-bg1 -> --hero-bg2 + halo radial --hero-halo en haut à droite */
-  background:
-    radial-gradient(circle at 85% 15%, var(--hero-halo) 0%, transparent 55%),
-    linear-gradient(135deg, var(--hero-bg1) 0%, var(--hero-bg2) 100%);
+  /* Fond totalement blanc */
+  background-color: #ffffff;
 }
 
 .hero-background-canvas-wrap {
@@ -23,7 +21,7 @@
   will-change: opacity;
 }
 
-/* Repli statique sans animation : motif de points en CSS */
+/* Repli statique sans animation : motif de points en CSS sur fond blanc */
 .hero-background-static-dots {
   position: absolute;
   inset: 0;
@@ -31,7 +29,7 @@
   height: 100%;
   background-image: radial-gradient(circle, rgba(0, 158, 224, 0.35) 1.5px, transparent 1.5px);
   background-size: 28px 28px;
-  mask-image: radial-gradient(circle at 62% 50%, black 0%, transparent 70%);
-  -webkit-mask-image: radial-gradient(circle at 62% 50%, black 0%, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
   pointer-events: none;
 }

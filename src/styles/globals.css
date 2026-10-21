@@ -13,10 +13,11 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #ffffff;
   }
 
   body {
-    background-color: var(--hero-bg1);
+    background-color: #ffffff;
     color: var(--ink);
     margin: 0;
     padding: 0;

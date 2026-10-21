@@ -8,7 +8,12 @@ Ce document détaille toutes les animations réutilisables du projet, leurs cara
 
 - **Zéro dépendance lourde** : Les animations de texte et de structure reposent exclusivement sur du CSS natif et fonctionnent immédiatement avant même l'hydratation JavaScript.
 - **Performances GPU strictes** : Seules les propriétés compositées (`opacity`, `transform`, `filter`) sont animées. Jamais `width`, `height`, `top` ou `left`.
-- **Tokens centralisés** : Les durées et courbes proviennent de `src/styles/tokens.css` :
+- **Palette officielle (reference/colors.png)** : Les couleurs de marque et leurs déclinaisons proviennent directement de la charte graphique :
+  - **Bleu original** : `--brand: #009ee0` (premier bleu de la charte)
+  - **Tints (éclaircissements de 90% à 10%)** : `--brand-tint-90` (`#19a8e3`) à `--brand-tint-10` (`#e5f5fc`)
+  - **Shades (assombrissements)** : `--brand-shade-100` (`#008eca`) à `--brand-shade-900` (`#001016`)
+  - **Neutres** : `--neutral-dark` (`#4b4d4f`), `--neutral-mid` (`#b1b5b9`), `--neutral-white` (`#ffffff`)
+- **Tokens de mouvement centralisés** :
   - Courbe par défaut : `--ease: cubic-bezier(0.22, 1, 0.36, 1)`
   - Durées : `--dur-fast: 400ms`, `--dur-base: 600ms`, `--dur-slow: 1100ms`
 - **Accessibilité universelle** : Sous `prefers-reduced-motion: reduce`, aucun effet de flou, de déplacement ou de boucle n'est joué ; les éléments sont immédiatement nets et visibles, avec un simple fondu universel de 0,6 s au maximum.
@@ -19,7 +24,7 @@ Ce document détaille toutes les animations réutilisables du projet, leurs cara
 
 - **Fichier** : `src/components/animations/BlurLines/BlurLines.tsx` & `BlurLines.css`
 - **Type** : Server Component (CSS pur, zéro JavaScript requis)
-- **Rôle** : Révèle un titre ou un paragraphe ligne par ligne avec un effet progressif passant d'un flou léger avec espacement étendu vers un texte net et condensé.
+- **Rôle** : Révèle un titre ou un paragraphe ligne par ligne avec un effet progressif passant d'un flou léger avec espacement étendu vers un texte net et condensé. Supporte le centrage du texte.
 - **Déclencheur** : Immédiat au chargement de la page (HTML/CSS initial).
 - **Accessibilité** : Insère un séparateur sémantique `<span className="sr-only"> </span>` entre chaque ligne pour garantir qu'une phrase complète et fluide soit énoncée par les lecteurs d'écran.
 
@@ -30,7 +35,7 @@ Ce document détaille toutes les animations réutilisables du projet, leurs cara
 | `lines` | `string[]` | *Requis* | Tableau des lignes de texte à afficher |
 | `staggerMs` | `number` | `140` | Décalage en ms entre le départ de chaque ligne consécutive via la variable `--i` |
 | `duration` | `string` | `'var(--dur-slow)'` | Durée de l'animation de chaque ligne (1100 ms) |
-| `className`| `string` | `''` | Classes CSS additionnelles |
+| `className`| `string` | `''` | Classes CSS additionnelles (ex: `text-center`) |
 
 ### Comportement mobile
 - Identique au desktop, s'adapte automatiquement à la taille de police fluide (`clamp`).
@@ -42,7 +47,7 @@ Ce document détaille toutes les animations réutilisables du projet, leurs cara
 ```tsx
 import { BlurLines } from '@/components/animations/BlurLines/BlurLines';
 
-<h1 className="text-4xl font-semibold leading-tight text-[var(--ink)]">
+<h1 className="text-4xl font-bold leading-tight text-center text-[var(--ink)]">
   <BlurLines
     lines={[
       "Nous concevons des solutions technologiques",
@@ -58,7 +63,7 @@ import { BlurLines } from '@/components/animations/BlurLines/BlurLines';
 
 - **Fichier** : `src/components/animations/DrawRule/DrawRule.tsx` & `DrawRule.css`
 - **Type** : Server Component (CSS pur)
-- **Rôle** : Dessine un filet de séparation horizontal élégant depuis la gauche vers la droite (`scaleX: 0 -> 1`).
+- **Rôle** : Dessine un filet de séparation horizontal élégant (`scaleX: 0 -> 1`), centré ou aligné à gauche.
 - **Déclencheur** : CSS au chargement avec délai paramétrable.
 - **Dimensions & Style** : Épaisseur fixe de 2 px, largeur dynamique `min(200px, 40%)`, couleur de marque `--brand` (`#009ee0`).
 
@@ -69,6 +74,7 @@ import { BlurLines } from '@/components/animations/BlurLines/BlurLines';
 | `delayMs` | `number` | `650` | Délai en millisecondes avant le début de l'étirement |
 | `durationMs`| `number` | `900` | Durée en millisecondes de l'étirement (0,9 s) |
 | `color` | `string` | `'var(--brand)'` | Couleur du trait |
+| `align` | `'center' \| 'left'` | `'center'` | Alignement horizontal du trait |
 | `className`| `string` | `''` | Classes CSS additionnelles |
 
 ### Comportement mobile
@@ -81,7 +87,7 @@ import { BlurLines } from '@/components/animations/BlurLines/BlurLines';
 ```tsx
 import { DrawRule } from '@/components/animations/DrawRule/DrawRule';
 
-<DrawRule delayMs={650} durationMs={900} className="mt-8" />
+<DrawRule delayMs={650} durationMs={900} align="center" className="mt-8" />
 ```
 
 ---
@@ -103,15 +109,6 @@ import { DrawRule } from '@/components/animations/DrawRule/DrawRule';
 | `as` | `ElementType` | `'div'` | Balise HTML sémantique (`div`, `p`, `span`, etc.) |
 | `className`| `string` | `''` | Classes CSS additionnelles |
 
-### Exemple d'utilisation
-```tsx
-import { FadeIn } from '@/components/animations/FadeIn/FadeIn';
-
-<FadeIn delay={300} duration={1000} as="p" className="text-sm text-[var(--muted)]">
-  Votre voyage vers la transformation commence aujourd’hui.
-</FadeIn>
-```
-
 ---
 
 ## 5. InView (Scroll Trigger)
@@ -124,19 +121,6 @@ import { FadeIn } from '@/components/animations/FadeIn/FadeIn';
   - Seuil fixé à **0.35** (l'élément doit être à 35% visible).
   - Déclenchement unique (`triggerOnce: true` par défaut) pour éviter tout clignotement ou coût CPU inutile lors des scrolls suivants.
 
-### Exemple d'utilisation
-```tsx
-import { InView } from '@/components/animations/InView/InView';
-
-<InView threshold={0.35} triggerOnce>
-  {(isInView) => (
-    <div className={`transition-opacity duration-700 ${isInView ? 'opacity-100' : 'opacity-0'}`}>
-      Contenu révélé au défilement
-    </div>
-  )}
-</InView>
-```
-
 ---
 
 ## 6. HeroBackground & Antigravity
@@ -147,14 +131,14 @@ import { InView } from '@/components/animations/InView/InView';
 - **Type** : Client Component (`"use client"`) monté dynamiquement (`next/dynamic`, `{ ssr: false }`).
 
 ### Architecture & Montage différé
-1. **Fond CSS permanent** : Le conteneur affiche en permanence un dégradé subtil (`--hero-bg1` vers `--hero-bg2`) accompagné d'un halo radial (`--hero-halo`) en haut à droite. Il n'y a **aucun décalage de mise en page (CLS = 0)** et le hero est parfait visuellement avant même que le canvas n'arrive.
+1. **Fond totalement blanc permanent** : Le conteneur affiche en permanence un fond `#ffffff` pur. Il n'y a **aucun décalage de mise en page (CLS = 0)**.
 2. **Montage asynchrone non-bloquant** : Antigravity n'est monté qu'après le premier affichage via `requestIdleCallback` (avec repli `setTimeout(..., 300)`). Le texte et le navigateur ne sont jamais ralentis.
 3. **Fondu d'apparition** : Dès son initialisation, le canvas apparaît avec une transition fluide de 1,2 s (`opacity: 0 -> 1`).
-4. **Interaction fluide** : Le composant écoute les événements de curseur sur `window`, ce qui permet aux particules d'interagir sur toute la surface de l'écran, y compris quand le curseur survole le texte positionné par-dessus.
+4. **Interaction fluide** : Le composant écoute les événements de curseur sur `window`, ce qui permet aux particules d'interagir sur toute la surface de l'écran, y compris quand le curseur survole le texte centré.
 
 ### Props utilisées pour Antigravity
 ```tsx
-colors={["#7dd3fc", "#e0f2fe", "#c3e7fa"]}
+colors={["#009ee0", "#4cbbe9", "#80cfef", "#b2e2f6"]} // Nuances officielles tirées de reference/colors.png
 count={particleCount}           // 1500 sur desktop, 700 sur mobile/tactile
 magnetRadius={4.5}
 ringRadius={4}
@@ -169,12 +153,6 @@ lightMode
 maxDevicePixelRatio={1.5}
 ```
 
-### Comment modifier l'apparence des particules
-- **Couleurs** : Modifier le tableau `colors` dans `HeroBackground.tsx` (ex: `colors={["#009ee0", "#7dd3fc", "#e0f2fe"]}`).
-- **Densité** : Ajuster `setParticleCount(...)` dans `HeroBackground.tsx` (ex: 2000 pour plus dense, 1000 pour plus aéré).
-- **Taille** : Modifier `particleSize` (ex: `0.5` pour des micro-particules discrètes, `0.9` pour des particules plus marquées).
-- **Vitesse & Réactivité** : Modifier `rotationSpeed` (vitesse de rotation), `waveAmplitude` (ondulation) ou `fieldStrength` (réactivité au curseur).
-
 ### Comportement mobile
 - Si la largeur d'écran est inférieure à 760 px (`window.innerWidth < 760`) ou si le pointeur principal est tactile (`pointer: coarse`), le nombre de particules est automatiquement réduit de 1500 à **700**. Cette adaptation est calculée après montage côté client pour éviter toute anomalie d'hydratation.
 
@@ -184,8 +162,8 @@ Antigravity n'est **jamais monté** et aucun contexte WebGL n'est alloué si :
 2. L'utilisateur a activé l'économie de données (`navigator.connection.saveData === true`).
 3. WebGL2 n'est pas disponible sur le périphérique (testé à la volée sur un canvas temporaire aussitôt détruit via `WEBGL_lose_context`).
 
-**Rendu du repli statique** : Un motif géométrique de points en CSS pur (`radial-gradient` de 1.5 px répété tous les 28 px, estompé par un masque radial centré à 62% 50% vers 70%), totalement figé et sans aucun impact CPU/GPU.
+**Rendu du repli statique** : Un motif géométrique de points en CSS pur (`radial-gradient` de 1.5 px répété tous les 28 px, estompé par un masque radial centré à 50% 50% vers 70%), totalement figé sur fond blanc et sans aucun impact CPU/GPU.
 
 ### Exceptions ESLint du composant Antigravity
 Le composant `Antigravity.tsx` provenant de la bibliothèque tierce React Bits manipule `settingsRef.current = settings;` directement dans son corps de rendu pour synchroniser les paramètres sans réinstancier le contexte WebGL. 
-Conformément aux directives de ne pas modifier le code source interne du composant fourni, la directive `/* eslint-disable */` a été ajoutée en en-tête du fichier pour autoriser ce fonctionnement sans bloquer le pipeline de build.
+La directive `/* eslint-disable */` est présente en en-tête du fichier pour autoriser ce fonctionnement sans altérer le code source d'origine.

@@ -64,10 +64,11 @@ export interface HeroBackgroundProps {
  * HeroBackground ("use client")
  *
  * Enveloppe le composant WebGL2 Antigravity avec :
- * - Fond de repli CSS dégradé + halo radial toujours présent (zéro CLS)
+ * - Fond de repli totalement blanc (zéro CLS)
  * - Montage différé après le premier affichage (requestIdleCallback ou repli setTimeout 300 ms)
  * - Fondu d'apparition du canvas (0 -> 1 en 1,2 s)
  * - Adaptation de la densité de particules pour mobile / tactile (700 au lieu de 1500)
+ * - Nuances de bleu officielles tirées de reference/colors.png
  * - Repli statique (motif de points CSS sans aucun contexte WebGL ni animation)
  */
 export function HeroBackground({ className = '' }: HeroBackgroundProps) {
@@ -130,7 +131,7 @@ export function HeroBackground({ className = '' }: HeroBackgroundProps) {
           }}
         >
           <Antigravity
-            colors={['#7dd3fc', '#e0f2fe', '#c3e7fa']}
+            colors={['#009ee0', '#4cbbe9', '#80cfef', '#b2e2f6']}
             count={particleCount}
             magnetRadius={4.5}
             ringRadius={4}
