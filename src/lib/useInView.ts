@@ -15,35 +15,62 @@ export interface UseInViewOptions {
    * Si vrai, ne déclenche l'animation qu'une seule fois (défaut : true).
    */
   triggerOnce?: boolean;
+  /**
+   * Si vrai, déclenche également si l'élément se situe déjà au-dessus de la zone cible
+   * (cas des rechargements en milieu de page ou défilements très rapides).
+   */
+  triggerIfAbove?: boolean;
+  /**
+   * Callback facultatif appelé au premier déclenchement.
+   */
+  onInView?: () => void;
 }
 
 /**
  * useInView
- * Hook réutilisable basé sur IntersectionObserver pour les futures animations au scroll.
- * Seuil par défaut configuré à 0.35, déclenchement unique.
+ * Hook réutilisable basé sur IntersectionObserver.
+ * Supporte le seuil, le rootMargin paramétrable et la détection d'éléments déjà au-dessus.
  */
 export function useInView<T extends HTMLElement = HTMLDivElement>(
   options: UseInViewOptions = {}
 ): [RefObject<T | null>, boolean] {
-  const { threshold = 0.35, rootMargin = '0px', triggerOnce = true } = options;
+  const {
+    threshold = 0.35,
+    rootMargin = '0px',
+    triggerOnce = true,
+    triggerIfAbove = false,
+    onInView,
+  } = options;
+
   const ref = useRef<T | null>(null);
   const [isInView, setIsInView] = useState(false);
+  const onInViewRef = useRef(onInView);
+  onInViewRef.current = onInView;
 
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
     if (typeof IntersectionObserver === 'undefined') {
-      const timer = setTimeout(() => setIsInView(true), 0);
+      const timer = setTimeout(() => {
+        setIsInView(true);
+        onInViewRef.current?.();
+      }, 0);
       return () => clearTimeout(timer);
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        const rootTop = entry.rootBounds ? entry.rootBounds.top : 0;
+        const isIntersecting = entry.isIntersecting;
+        const isAbove = triggerIfAbove && entry.boundingClientRect.top < rootTop;
+
+        if (isIntersecting || isAbove) {
           setIsInView(true);
+          onInViewRef.current?.();
           if (triggerOnce) {
             observer.unobserve(element);
+            observer.disconnect();
           }
         } else if (!triggerOnce) {
           setIsInView(false);
@@ -57,7 +84,7 @@ export function useInView<T extends HTMLElement = HTMLDivElement>(
     return () => {
       observer.disconnect();
     };
-  }, [threshold, rootMargin, triggerOnce]);
+  }, [threshold, rootMargin, triggerOnce, triggerIfAbove]);
 
   return [ref, isInView];
 }

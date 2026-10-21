@@ -1,12 +1,27 @@
 {
   "Home": {
     "hero": {
-      "eyebrow": "Votre voyage vers la transformation commence aujourd’hui.",
-      "title": "Nous concevons des solutions technologiques sur mesure pour l’industrie africaine",
+      "eyebrow": "Nicomatic Sénégal",
+      "title": "Votre voyage vers la transformation commence aujourd’hui.",
+      "sub": "Nous concevons des solutions technologiques sur mesure pour l’industrie africaine",
       "titleLines": [
-        "Nous concevons des solutions technologiques",
-        "sur mesure pour l’industrie africaine"
+        "Votre voyage vers la transformation",
+        "commence aujourd’hui."
       ]
+    },
+    "map": {
+      "label": "Notre présence dans le monde",
+      "stats": {
+        "employees": "Nicomaticiens",
+        "subsidiaries": "filiales",
+        "countries": "pays"
+      },
+      "aria": "Carte du monde des implantations Nicomatic"
+    },
+    "values": {
+      "eyebrow": "En quelques mots",
+      "statement": "Innover Créer Transformer",
+      "paragraph": "Filiale du groupe NICOMATIC, présent dans une vingtaine de pays à travers le monde, nous concevons des machines industrielles sur mesure, accompagnons les entreprises et développons des solutions technologiques innovantes pour optimiser les processus et relever les défis opérationnels. Notre mission est de transformer l'industrie locale grâce à la synergie de nos expertises en électronique, mécanique et informatique. Découvrez comment nous propulsons vos projets vers l'excellence."
     }
   }
 }

@@ -1,12 +1,27 @@
 {
   "Home": {
     "hero": {
-      "eyebrow": "Your journey toward transformation starts today.",
-      "title": "We design tailor-made technology solutions for African industry",
+      "eyebrow": "Nicomatic Sénégal",
+      "title": "Your journey toward transformation starts today.",
+      "sub": "We design tailor-made technology solutions for African industry",
       "titleLines": [
-        "We design tailor-made technology solutions",
-        "for African industry"
+        "Your journey toward transformation",
+        "starts today."
       ]
+    },
+    "map": {
+      "label": "Our presence around the world",
+      "stats": {
+        "employees": "team members",
+        "subsidiaries": "subsidiaries",
+        "countries": "countries"
+      },
+      "aria": "World map of Nicomatic locations"
+    },
+    "values": {
+      "eyebrow": "In a few words",
+      "statement": "Innovate Create Transform",
+      "paragraph": "A subsidiary of the NICOMATIC Group, present in around twenty countries worldwide, we design custom industrial machines, support businesses, and develop innovative technology solutions to optimize processes and meet operational challenges. Our mission is to transform local industry through the synergy of our expertise in electronics, mechanics, and software. Discover how we propel your projects toward excellence."
     }
   }
 }

@@ -1,0 +1,155 @@
+/* src/components/sections/home/WorldMap/WorldMapSection.css */
+
+.world-map-section {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  /* Fond dégradé vertical doux de --hero-bg2 vers --hero-bg1 */
+  background: linear-gradient(180deg, var(--hero-bg2) 0%, var(--hero-bg1) 100%);
+  padding-top: max(clamp(24px, 6vw, 96px), env(safe-area-inset-top));
+  padding-bottom: max(clamp(24px, 6vw, 96px), env(safe-area-inset-bottom));
+  padding-left: max(clamp(24px, 6vw, 96px), env(safe-area-inset-left));
+  padding-right: max(clamp(24px, 6vw, 96px), env(safe-area-inset-right));
+}
+
+/* Sentinelle invisible de 1 px au centre vertical de la section */
+.map-sentinel {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Enveloppe de la carte centrée */
+.world-map-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ==========================================================================
+   BLOC TEXTE & STATISTIQUES
+   ========================================================================== */
+.map-text-block {
+  position: relative;
+  z-index: 20;
+  text-align: left;
+  max-width: 42rem;
+}
+
+/* Disposition sur desktop : chevauchement bas gauche de la carte */
+@media (min-width: 1024px) {
+  .map-text-block {
+    position: absolute;
+    left: clamp(0.75rem, 2vw, 2.5rem);
+    bottom: clamp(1rem, 2.5vw, 3rem);
+  }
+}
+
+/* Disposition sur mobile / tablette : flux normal sous la carte */
+@media (max-width: 1023px) {
+  .map-text-block {
+    position: relative;
+    margin-top: 2rem;
+    width: 100%;
+  }
+}
+
+/* Voile de lisibilité discret assurant un contraste WCAG AA sur desktop */
+.map-text-veil {
+  position: absolute;
+  inset: -1.75rem -2.25rem;
+  border-radius: 2rem;
+  background: radial-gradient(
+    ellipse at 35% 50%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.6) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Label de section */
+.map-label {
+  margin: 0 0 0.75rem 0;
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #009EE0;
+  opacity: 0;
+}
+
+.map-play .map-label {
+  animation: fadeInMapText 0.6s var(--ease) 3.4s forwards;
+}
+
+/* Ligne des trois statistiques */
+.map-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(1.5rem, 3.5vw, 3.5rem);
+  opacity: 0;
+}
+
+.map-play .map-stats-row {
+  animation: fadeInMapText 0.6s var(--ease) 3.8s forwards;
+}
+
+@keyframes fadeInMapText {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.map-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.map-stat-number {
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+  font-weight: 600;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: #009EE0;
+  min-width: 2.5ch;
+}
+
+.map-stat-number--wide {
+  min-width: 3.8ch;
+}
+
+.map-stat-caption {
+  margin: 0.35rem 0 0 0;
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
+  font-weight: 400;
+  color: #009EE0;
+}
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .map-label,
+  .map-stats-row {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}

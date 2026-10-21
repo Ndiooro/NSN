@@ -12,6 +12,10 @@ export interface HeroProps {
    */
   eyebrow?: string;
   /**
+   * Texte secondaire sous le titre (fourni via messages/*.json).
+   */
+  sub?: string;
+  /**
    * Lignes du titre h1 rendu avec BlurLines (fournies via messages/*.json).
    */
   titleLines?: string[];
@@ -33,12 +37,14 @@ export interface HeroProps {
  */
 export async function Hero({
   eyebrow: propEyebrow,
+  sub: propSub,
   titleLines: propTitleLines,
   className = '',
 }: HeroProps) {
   // Récupération des traductions si non fournies explicitement en props
   const t = await getTranslations('Home.hero');
   const eyebrow = propEyebrow ?? t('eyebrow');
+  const sub = propSub ?? t('sub');
   const titleLines = propTitleLines ?? (t.raw('titleLines') as string[]);
 
   return (
@@ -61,9 +67,11 @@ export async function Hero({
           <BlurLines lines={titleLines} className="text-center" />
         </h1>
 
-        {/* Trait de séparation animé sous le titre, centré */}
-        <DrawRule delayMs={650} durationMs={900} align="center" className="mt-8" />
-      </div>
+          <FadeIn delay={300} duration={1000}>
+            <p className="hero-sub">{sub}</p>
+        </FadeIn>
+
+         </div>
     </section>
   );
 }

@@ -1,0 +1,284 @@
+/* src/components/animations/WorldMapReveal/world-map.css */
+
+.world-map-container {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  aspect-ratio: 2329 / 1387;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+}
+
+.world-map-container.ready {
+  opacity: 1;
+}
+
+.world-map-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   CAMERA & ÉTAT INITIAL (Zoom initial sur le Sénégal)
+   ========================================================================== */
+.camera {
+  transform: translate(var(--tx0, -1131px), var(--ty0, -849px)) scale(var(--k, 2.5));
+  transform-box: view-box;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.world-map-container.play .camera {
+  animation: cameraUnzoom 1.4s cubic-bezier(0.65, 0, 0.35, 1) 2.1s forwards;
+}
+
+@keyframes cameraUnzoom {
+  0% {
+    transform: translate(var(--tx0, -1131px), var(--ty0, -849px)) scale(var(--k, 2.5));
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+/* ==========================================================================
+   POINT DE DÉPART (Start Dot au centre W/2, H/2 - Hors camera)
+   ========================================================================== */
+.start-dot {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.start-dot-core {
+  fill: var(--brand);
+}
+
+.start-dot-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: startDotPulse 2.4s ease-out infinite;
+}
+
+@keyframes startDotPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Dissolution du point entre 1,6 s et 2,0 s */
+.world-map-container.play .start-dot {
+  animation: startDotFadeOut 0.4s ease-out 1.6s forwards;
+}
+
+.world-map-container.play .start-dot-halo {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes startDotFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   SÉNÉGAL (Contour animé + Remplissage)
+   ========================================================================== */
+.sn path {
+  stroke: var(--brand);
+  stroke-width: 1.2px;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  fill: var(--brand);
+  fill-opacity: 0;
+  will-change: stroke-dashoffset, fill-opacity;
+}
+
+/* Étape 1 : dessin de 0,2s à 1,4s (durée 1,2s)
+   Étape 2 : remplissage de 1,2s à 1,7s (durée 0,5s) */
+.world-map-container.play .sn path {
+  animation:
+    drawSenegal 1.2s var(--ease) 0.2s forwards,
+    fillSenegal 0.5s var(--ease) 1.2s forwards;
+}
+
+@keyframes drawSenegal {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fillSenegal {
+  0% {
+    fill-opacity: 0;
+  }
+  100% {
+    fill-opacity: 0.12;
+  }
+}
+
+/* ==========================================================================
+   PIN SÉNÉGAL (Chute de 1,5s à 2,1s)
+   ========================================================================== */
+.pin-sn {
+  opacity: 0;
+  transform: translateY(-14px);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  will-change: opacity, transform;
+}
+
+.world-map-container.play .pin-sn {
+  animation: dropPinSn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards;
+}
+
+@keyframes dropPinSn {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   MONDE & MASQUE EN ONDE (Révélation de 2,3s à 3,9s)
+   ========================================================================== */
+.world path {
+  fill: none;
+  stroke: var(--brand);
+  stroke-opacity: 0.5;
+  stroke-width: 0.8px;
+}
+
+.reveal-circle {
+  transform: scale(0);
+  transform-box: view-box;
+  transform-origin: var(--cx, 918px) var(--cy, 617px);
+  will-change: transform;
+}
+
+.world-map-container.play .reveal-circle {
+  animation: waveReveal 1.6s cubic-bezier(0.4, 0, 0.2, 1) 2.3s forwards;
+}
+
+@keyframes waveReveal {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ==========================================================================
+   PINS DU MONDE (Apparition échelonnée à partir de 3,0s)
+   ========================================================================== */
+.pin-world-item {
+  opacity: 0;
+  transform: translateY(-6px);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  will-change: opacity, transform;
+}
+
+.world-map-container.play .pin-world-item {
+  animation: dropPinWorld 0.5s var(--ease) calc(3s + var(--i, 0) * 70ms) forwards;
+}
+
+@keyframes dropPinWorld {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   MOBILE (< 760px) : Remplacement du masque par fondu léger
+   ========================================================================== */
+@media (max-width: 759px) {
+  .world {
+    mask: none !important;
+    -webkit-mask: none !important;
+    opacity: 0;
+  }
+
+  .world-map-container.play .world {
+    animation: worldMobileFade 1.2s ease-out 2.4s forwards;
+  }
+
+  @keyframes worldMobileFade {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITÉ : PREFERS-REDUCED-MOTION (État final immédiat)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .world-map-container {
+    opacity: 1 !important;
+  }
+
+  .camera {
+    transform: translate(0, 0) scale(1) !important;
+    animation: none !important;
+  }
+
+  .world {
+    mask: none !important;
+    -webkit-mask: none !important;
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .sn path {
+    stroke-dashoffset: 0 !important;
+    fill-opacity: 0.12 !important;
+    animation: none !important;
+  }
+
+  .pin-sn,
+  .pin-world-item {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    animation: none !important;
+  }
+
+  .start-dot {
+    display: none !important;
+    opacity: 0 !important;
+    animation: none !important;
+  }
+
+  .reveal-circle {
+    transform: scale(1) !important;
+    animation: none !important;
+  }
+}
