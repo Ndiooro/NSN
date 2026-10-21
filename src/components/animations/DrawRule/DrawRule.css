@@ -1,0 +1,30 @@
+@keyframes drawRuleIn {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.draw-rule-line {
+  display: block;
+  height: 2px;
+  width: min(200px, 40%);
+  background-color: var(--rule-color, var(--brand, #009ee0));
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation-name: drawRuleIn;
+  animation-duration: var(--rule-duration, 900ms);
+  animation-timing-function: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+  animation-fill-mode: forwards;
+  animation-delay: var(--rule-delay, 650ms);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draw-rule-line {
+    transform: scaleX(1) !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,34 @@
+@keyframes blurLineIn {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+    letter-spacing: 0.02em;
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    letter-spacing: -0.02em;
+  }
+}
+
+.blur-line-item {
+  display: block;
+  opacity: 0;
+  filter: blur(10px);
+  letter-spacing: 0.02em;
+  animation-name: blurLineIn;
+  animation-duration: var(--line-duration, var(--dur-slow, 1100ms));
+  animation-timing-function: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+  animation-fill-mode: forwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger-delay, 140ms));
+  will-change: opacity, filter, letter-spacing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blur-line-item {
+    opacity: 1 !important;
+    filter: none !important;
+    letter-spacing: -0.02em !important;
+    animation: none !important;
+  }
+}

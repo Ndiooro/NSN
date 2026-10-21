@@ -1,0 +1,26 @@
+/* src/styles/tokens.css */
+/**
+ * Nicomatic Sénégal - Design Tokens
+ * Thème clair uniquement pour l'instant (color-scheme: light)
+ * Variables CSS faciles à modifier et surcharger.
+ */
+:root {
+  color-scheme: light;
+
+  /* Couleurs */
+  /* --brand : décoratif seulement, jamais en texte courant (contraste insuffisant sur fond blanc) */
+  --brand: #009ee0;
+  --hero-bg1: #ffffff;
+  --hero-bg2: #e8f4fb;
+  --hero-halo: rgba(0, 158, 224, 0.12);
+
+  /* Typographie & contraste */
+  --ink: #0b2233;
+  --muted: #4a6577;
+
+  /* Mouvement & durées */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 400ms;
+  --dur-base: 600ms;
+  --dur-slow: 1100ms;
+}

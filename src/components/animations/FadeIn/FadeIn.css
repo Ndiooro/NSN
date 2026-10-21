@@ -1,0 +1,25 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fade-in-container {
+  opacity: 0;
+  animation-name: fadeIn;
+  animation-duration: var(--fade-duration, var(--dur-base, 600ms));
+  animation-timing-function: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+  animation-fill-mode: forwards;
+  animation-delay: var(--fade-delay, 0ms);
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-container {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}

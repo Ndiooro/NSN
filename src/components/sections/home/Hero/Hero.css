@@ -1,0 +1,56 @@
+/* src/components/sections/home/Hero/Hero.css */
+
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--hero-bg1) 0%, var(--hero-bg2) 100%);
+  padding-top: max(clamp(24px, 6vw, 96px), env(safe-area-inset-top));
+  padding-bottom: max(clamp(24px, 6vw, 96px), env(safe-area-inset-bottom));
+  padding-left: max(clamp(24px, 6vw, 96px), env(safe-area-inset-left));
+  padding-right: max(clamp(24px, 6vw, 96px), env(safe-area-inset-right));
+}
+
+.hero-content-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 46rem;
+}
+
+/* Voile de lisibilité discret assurant un contraste WCAG AA permanent */
+.hero-text-veil {
+  position: absolute;
+  inset: -3rem -4rem;
+  border-radius: 2.5rem;
+  background: radial-gradient(
+    ellipse at 35% 50%,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.35) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+.hero-eyebrow {
+  margin: 0 0 1rem 0;
+  font-size: clamp(0.875rem, 1.2vw, 1.0625rem);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: normal;
+  color: var(--muted);
+}

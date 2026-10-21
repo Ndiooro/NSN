@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--hero-bg1);
+    color: var(--ink);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+}
+
+/*
+  Accessibilité : Respect de prefers-reduced-motion
+  Supprime les transformations, le flou, les boucles et les délais.
+  Ne reste qu'un fondu de 0,6 s.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.6s !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.6s !important;
+    transition-delay: 0s !important;
+    transform: none !important;
+    filter: none !important;
+    scroll-behavior: auto !important;
+  }
+}
