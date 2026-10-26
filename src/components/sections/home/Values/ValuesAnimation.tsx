@@ -1,15 +1,17 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import TrueFocus from '@/components/animations/TrueFocus/TrueFocus';
 import VariableProximity from '@/components/animations/VariableProximity/VariableProximity';
 
 interface ValuesAnimationProps {
   statement: string;
+  descriptions: string[];
   paragraph: string;
 }
 
-export function ValuesAnimation({ statement, paragraph }: ValuesAnimationProps) {
+export function ValuesAnimation({ statement, descriptions, paragraph }: ValuesAnimationProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
   const paragraphRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -17,33 +19,36 @@ export function ValuesAnimation({ statement, paragraph }: ValuesAnimationProps) 
       <h2 className="values-heading">
         <TrueFocus
           sentence={statement}
-          focusStyle="brackets"
+          focusStyle="underline"
           easing="smooth"
           order="sequential"
-          blurAmount={5}
+          blurAmount={0}
           focusScale={1}
-          unfocusedOpacity={1}
-          borderColor="#009ee0"
-          cornerSize={16}
-          borderWidth={3}
-          animationDuration={0.5}
+          unfocusedOpacity={0.38}
+          borderColor="#009FF0"
+          borderWidth={2}
+          animationDuration={0.6}
           pauseBetweenAnimations={1}
-          highlightColor="#009ee0"
+          onActiveIndexChange={setActiveIndex}
         />
       </h2>
 
-      <div ref={paragraphRef} className="values-copy-wrap">
+      <p key={activeIndex} className="values-copy-wrap values-copy">
+        {descriptions[activeIndex] ?? descriptions[0]}
+      </p>
+
+      <div ref={paragraphRef} className="values-description">
         <VariableProximity
           label={paragraph}
-          className="values-copy"
+          className="values-description-text"
           fromFontVariationSettings="'wght' 300, 'opsz' 9"
-          toFontVariationSettings="'wght' 800, 'opsz' 40"
+          toFontVariationSettings="'wght' 600, 'opsz' 28"
           containerRef={paragraphRef}
           radius={150}
           falloff="gaussian"
           smoothing={0.3}
-          scale={1.22}
-          lift={0.16}
+          scale={1.04}
+          lift={0.04}
           idleWave={false}
         />
       </div>

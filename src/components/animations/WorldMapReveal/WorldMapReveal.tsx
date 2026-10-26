@@ -154,7 +154,7 @@ export function WorldMapReveal({
             fy="50%"
           >
             <stop offset="0.75" stopColor="#ffffff" stopOpacity="1" />
-            <stop offset="1" stopColor="#000000" stopOpacity="1" />
+            <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
 
           {/* Masque positionné sur les dimensions complètes du viewBox */}
@@ -165,6 +165,7 @@ export function WorldMapReveal({
             y={0}
             width={VIEWBOX_WIDTH}
             height={VIEWBOX_HEIGHT}
+            style={{ maskType: 'alpha' }}
           >
             <circle
               className="reveal-circle"

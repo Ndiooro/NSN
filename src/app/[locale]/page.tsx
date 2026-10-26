@@ -28,7 +28,8 @@ export default async function HomePage({ params }: HomePageProps) {
     <main>
       <Hero eyebrow={eyebrow} sub={sub} titleLines={titleLines} />
       <WorldMapSection />
-      <ValuesSection />
+      {/* <ValuesSection/> */}
+     
     </main>
   );
 }

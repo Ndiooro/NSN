@@ -166,6 +166,7 @@
   stroke: var(--brand);
   stroke-opacity: 0.5;
   stroke-width: 0.8px;
+  shape-rendering: optimizeSpeed;
 }
 
 .reveal-circle {
@@ -196,7 +197,6 @@
   transform: translateY(-6px);
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  will-change: opacity, transform;
 }
 
 .world-map-container.play .pin-world-item {

@@ -21,6 +21,7 @@ interface TrueFocusProps {
   cornerSize?: number;
   borderWidth?: number;
   unfocusedOpacity?: number;
+  onActiveIndexChange?: (index: number) => void;
 }
 
 interface FocusRect {
@@ -56,6 +57,7 @@ export function TrueFocus({
   cornerSize = 16,
   borderWidth = 3,
   unfocusedOpacity = 1,
+  onActiveIndexChange,
 }: TrueFocusProps) {
   const words = sentence.split(separator).filter((word) => word.trim() !== '');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -83,6 +85,10 @@ export function TrueFocus({
     }, (animationDuration + pauseBetweenAnimations) * 1000);
     return () => clearInterval(interval);
   }, [manualMode, animationDuration, pauseBetweenAnimations, words.length, order]);
+
+  useEffect(() => {
+    onActiveIndexChange?.(activeIndex);
+  }, [activeIndex, onActiveIndexChange]);
 
   useIsomorphicLayoutEffect(() => {
     const container = containerRef.current;
@@ -178,7 +184,7 @@ export function TrueFocus({
               filter: `blur(${isActive ? 0 : blurAmount}px)`,
               opacity: isActive ? 1 : unfocusedOpacity,
               transform: focusScale !== 1 ? `scale(${isActive ? focusScale : 1})` : undefined,
-              transition: `filter ${duration}s ease, opacity ${duration}s ease, transform ${duration}s ${spring ? SPRING_CSS : SMOOTH_CSS}`,
+              transition: `color ${duration}s ease, filter ${duration}s ease, opacity ${duration}s ease, transform ${duration}s ${spring ? SPRING_CSS : SMOOTH_CSS}`,
             }}
             onMouseEnter={() => {
               if (manualMode) setCurrentIndex(index);
