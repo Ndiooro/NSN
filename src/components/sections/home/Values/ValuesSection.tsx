@@ -10,7 +10,6 @@ export async function ValuesSection() {
       <p className="values-eyebrow">{t('eyebrow')}</p>
       <ValuesAnimation
         statement={t('statement')}
-        descriptions={[t('innovate'), t('create'), t('transform')]}
         paragraph={t('paragraph')}
       />
     </section>
