@@ -30,31 +30,34 @@ Ce document détaille toutes les animations réutilisables du projet, leurs cara
 
 ### Props
 
-| Prop | Type | Défaut | Description |
-| :--- | :--- | :--- | :--- |
-| `lines` | `string[]` | *Requis* | Tableau des lignes de texte à afficher |
-| `staggerMs` | `number` | `140` | Décalage en ms entre le départ de chaque ligne consécutive via la variable `--i` |
-| `duration` | `string` | `'var(--dur-slow)'` | Durée de l'animation de chaque ligne (1100 ms) |
-| `className`| `string` | `''` | Classes CSS additionnelles (ex: `text-center`) |
+| Prop        | Type       | Défaut              | Description                                                                      |
+| :---------- | :--------- | :------------------ | :------------------------------------------------------------------------------- |
+| `lines`     | `string[]` | _Requis_            | Tableau des lignes de texte à afficher                                           |
+| `staggerMs` | `number`   | `140`               | Décalage en ms entre le départ de chaque ligne consécutive via la variable `--i` |
+| `duration`  | `string`   | `'var(--dur-slow)'` | Durée de l'animation de chaque ligne (1100 ms)                                   |
+| `className` | `string`   | `''`                | Classes CSS additionnelles (ex: `text-center`)                                   |
 
 ### Comportement mobile
+
 - Identique au desktop, s'adapte automatiquement à la taille de police fluide (`clamp`).
 
 ### Comportement reduced-motion
+
 - Désactive immédiatement le flou (`filter: none !important`), l'opacité est forcée à 1 et le crénelage à `-0.02em`. Aucun retard ni flou perçu.
 
 ### Exemple d'utilisation
+
 ```tsx
-import { BlurLines } from '@/components/animations/BlurLines/BlurLines';
+import { BlurLines } from "@/components/animations/BlurLines/BlurLines";
 
 <h1 className="text-4xl font-bold leading-tight text-center text-[var(--ink)]">
   <BlurLines
     lines={[
       "Nous concevons des solutions technologiques",
-      "sur mesure pour l’industrie africaine"
+      "sur mesure pour l’industrie africaine",
     ]}
   />
-</h1>
+</h1>;
 ```
 
 ---
@@ -69,25 +72,28 @@ import { BlurLines } from '@/components/animations/BlurLines/BlurLines';
 
 ### Props
 
-| Prop | Type | Défaut | Description |
-| :--- | :--- | :--- | :--- |
-| `delayMs` | `number` | `650` | Délai en millisecondes avant le début de l'étirement |
-| `durationMs`| `number` | `900` | Durée en millisecondes de l'étirement (0,9 s) |
-| `color` | `string` | `'var(--brand)'` | Couleur du trait |
-| `align` | `'center' \| 'left'` | `'center'` | Alignement horizontal du trait |
-| `className`| `string` | `''` | Classes CSS additionnelles |
+| Prop         | Type                 | Défaut           | Description                                          |
+| :----------- | :------------------- | :--------------- | :--------------------------------------------------- |
+| `delayMs`    | `number`             | `650`            | Délai en millisecondes avant le début de l'étirement |
+| `durationMs` | `number`             | `900`            | Durée en millisecondes de l'étirement (0,9 s)        |
+| `color`      | `string`             | `'var(--brand)'` | Couleur du trait                                     |
+| `align`      | `'center' \| 'left'` | `'center'`       | Alignement horizontal du trait                       |
+| `className`  | `string`             | `''`             | Classes CSS additionnelles                           |
 
 ### Comportement mobile
+
 - La largeur `min(200px, 40%)` assure que le trait ne déborde jamais sur écran étroit (smartphone 390 px : 40% = ~156 px).
 
 ### Comportement reduced-motion
+
 - `scaleX` fixé immédiatement à `1`, animation neutralisée.
 
 ### Exemple d'utilisation
-```tsx
-import { DrawRule } from '@/components/animations/DrawRule/DrawRule';
 
-<DrawRule delayMs={650} durationMs={900} align="center" className="mt-8" />
+```tsx
+import { DrawRule } from "@/components/animations/DrawRule/DrawRule";
+
+<DrawRule delayMs={650} durationMs={900} align="center" className="mt-8" />;
 ```
 
 ---
@@ -101,13 +107,13 @@ import { DrawRule } from '@/components/animations/DrawRule/DrawRule';
 
 ### Props
 
-| Prop | Type | Défaut | Description |
-| :--- | :--- | :--- | :--- |
-| `children` | `ReactNode` | *Requis* | Contenu à animer |
-| `delay` | `number` | `0` | Délai avant affichage en millisecondes |
-| `duration` | `number` | `600` | Durée du fondu en millisecondes |
-| `as` | `ElementType` | `'div'` | Balise HTML sémantique (`div`, `p`, `span`, etc.) |
-| `className`| `string` | `''` | Classes CSS additionnelles |
+| Prop        | Type          | Défaut   | Description                                       |
+| :---------- | :------------ | :------- | :------------------------------------------------ |
+| `children`  | `ReactNode`   | _Requis_ | Contenu à animer                                  |
+| `delay`     | `number`      | `0`      | Délai avant affichage en millisecondes            |
+| `duration`  | `number`      | `600`    | Durée du fondu en millisecondes                   |
+| `as`        | `ElementType` | `'div'`  | Balise HTML sémantique (`div`, `p`, `span`, etc.) |
+| `className` | `string`      | `''`     | Classes CSS additionnelles                        |
 
 ---
 
@@ -131,12 +137,14 @@ import { DrawRule } from '@/components/animations/DrawRule/DrawRule';
 - **Type** : Client Component (`"use client"`) monté dynamiquement (`next/dynamic`, `{ ssr: false }`).
 
 ### Architecture & Montage différé
+
 1. **Fond totalement blanc permanent** : Le conteneur affiche en permanence un fond `#ffffff` pur. Il n'y a **aucun décalage de mise en page (CLS = 0)**.
 2. **Montage asynchrone non-bloquant** : Antigravity n'est monté qu'après le premier affichage via `requestIdleCallback` (avec repli `setTimeout(..., 300)`). Le texte et le navigateur ne sont jamais ralentis.
 3. **Fondu d'apparition** : Dès son initialisation, le canvas apparaît avec une transition fluide de 1,2 s (`opacity: 0 -> 1`).
 4. **Interaction fluide** : Le composant écoute les événements de curseur sur `window`, ce qui permet aux particules d'interagir sur toute la surface de l'écran, y compris quand le curseur survole le texte centré.
 
 ### Props utilisées pour Antigravity
+
 ```tsx
 colors={["#009ee0", "#4cbbe9", "#80cfef", "#b2e2f6"]} // Nuances officielles tirées de reference/colors.png
 count={particleCount}           // 1500 sur desktop, 700 sur mobile/tactile
@@ -154,10 +162,13 @@ maxDevicePixelRatio={1.5}
 ```
 
 ### Comportement mobile
+
 - Si la largeur d'écran est inférieure à 760 px (`window.innerWidth < 760`) ou si le pointeur principal est tactile (`pointer: coarse`), le nombre de particules est automatiquement réduit de 1500 à **700**. Cette adaptation est calculée après montage côté client pour éviter toute anomalie d'hydratation.
 
 ### Repli statique (Zero WebGL)
+
 Antigravity n'est **jamais monté** et aucun contexte WebGL n'est alloué si :
+
 1. L'utilisateur a activé `prefers-reduced-motion: reduce`.
 2. L'utilisateur a activé l'économie de données (`navigator.connection.saveData === true`).
 3. WebGL2 n'est pas disponible sur le périphérique (testé à la volée sur un canvas temporaire aussitôt détruit via `WEBGL_lose_context`).
@@ -165,6 +176,7 @@ Antigravity n'est **jamais monté** et aucun contexte WebGL n'est alloué si :
 **Rendu du repli statique** : Un motif géométrique de points en CSS pur (`radial-gradient` de 1.5 px répété tous les 28 px, estompé par un masque radial centré à 50% 50% vers 70%), totalement figé sur fond blanc et sans aucun impact CPU/GPU.
 
 ### Exceptions ESLint du composant Antigravity
+
 Le composant `Antigravity.tsx` provenant de la bibliothèque tierce React Bits manipule `settingsRef.current = settings;` directement dans son corps de rendu pour synchroniser les paramètres sans réinstancier le contexte WebGL.
 La directive `/* eslint-disable */` est présente en en-tête du fichier pour autoriser ce fonctionnement sans altérer le code source d'origine.
 
@@ -184,12 +196,12 @@ La directive `/* eslint-disable */` est présente en en-tête du fichier pour au
 - **Fichiers** : `src/components/animations/ParticleTitle/ParticleTitle.tsx` & `.css`
 - **Type** : Client Component, aucun paquet supplémentaire.
 - **Props** : `text: string` — le libellé traduit affiché dans le vrai `<h1>`.
-- **Principe accessible** : Le texte du `<h1>` fournit la sémantique, la sélection et la mise en page. Après chargement des polices et échantillonnage, seul sa couleur devient transparente; le canvas positionné en absolu, superposé au titre, est `aria-hidden` et `pointer-events: none`. Sans JavaScript ou canvas fonctionnel, le texte du titre reste visible.
+- **États et accessibilité** : Le `<h1>` conserve son texte sémantique, sélectionnable et sa mise en page dans les trois modes `pending`, `canvas` et `static`. Lorsque les scripts sont activés, le texte est masqué visuellement en `pending` et `canvas`; le canvas superposé est décoratif (`aria-hidden`, non interactif). Sans JavaScript, la règle `scripting: none` laisse le texte visible. Le mode statique est utilisé en cas de repli.
 - **Couleurs** : Les particules utilisent une palette déterministe de 60 % `--brand-deep`, 25 % `--ink-deep` et 15 % `--brand-strong`. Le titre de repli utilise `--brand-deep`.
-- **Échantillonnage** : Attend `document.fonts.ready`, mesure les lignes du nœud texte par `Range`, puis dessine ces lignes temporairement dans le canvas transparent avant d’échantillonner ses pixels. Le canvas final a le même bloc que le `<h1>`; `ResizeObserver` recalcule les positions avec un debounce de 100 ms. Le pas est ajusté au besoin pour respecter le plafond; le diamètre vise 72 % du pas CSS avec un minimum de 2,2 px.
-- **Netteté, animation et budget** : Le canvas utilise un DPR plafonné à 2. Le titre et le texte échantillonné utilisent la graisse 700, chargée localement. L’assemblage commence après 500 ms et dure environ 1,6 s. Le budget est plafonné à 3 500 particules sur ordinateur et 1 800 sous 760 px. L’interaction pointeur, limitée à `hover: hover` et `pointer: fine`, repousse les particules de 8 px au maximum.
-- **Sommeil** : Une fois l’assemblage terminé, la boucle `requestAnimationFrame` s’arrête. Elle se réveille au mouvement du pointeur et s’arrête de nouveau quand les particules sont revenues au repos. Elle est aussi suspendue hors du viewport et quand l’onglet est masqué.
-- **Repli statique** : Aucun canvas n’est activé si `prefers-reduced-motion: reduce`, `navigator.connection.saveData` ou si le contexte 2D manque. Le titre reste en texte avec un fondu de 600 ms.
+- **Échantillonnage et alignement** : Attend `document.fonts.ready`, mesure chaque caractère visible avec `Range`, groupe les caractères selon le haut de leur rectangle (tolérance de 1 px), puis dessine chaque glyphe à sa position DOM. La ligne utilise la baseline `line.top + measureText(lineText).fontBoundingBoxAscent` (repli à 80 % de la taille de police). Les cellules sont échantillonnées au centroïde de leurs pixels de glyphe. `ResizeObserver` recalcule les positions avec un debounce de 100 ms; au repos, le redimensionnement redessine directement les particules sur les nouvelles cibles.
+- **Séquence et budget** : Après le chargement des polices et l’échantillonnage, le titre passe en mode `canvas`, puis attend 500 ms lorsqu’il est visible avant un seul rassemblement de 1 800 ms. Le mouvement « sand » décale les départs de gauche à droite; tous les délais sont normalisés pour que la dernière particule arrive à la fin. Le canvas reste ensuite sur le titre en points. Le DPR est plafonné à 2 et le budget à 3 500 particules sur ordinateur ou 1 800 sous 760 px.
+- **Sommeil et debug** : `requestAnimationFrame` tourne uniquement pendant les 1 800 ms du rassemblement et s’arrête au repos. Le délai et l’animation sont suspendus hors du viewport ou lorsque l’onglet est masqué. En développement, `?debug=particles` dessine le texte de référence rouge à 40 % sous les particules pour contrôler leur alignement.
+- **Repli statique** : Le mode `static` est utilisé avec `prefers-reduced-motion: reduce`, `navigator.connection.saveData`, un canvas/contexte indisponible, un échantillonnage vide ou en cas d’erreur. Une sécurité bascule aussi vers ce mode si l’échantillonnage n’a pas abouti en 3 s. Le texte reste visible avec un fondu d’entrée de 600 ms; aucun canvas n’est rendu en mode statique.
 
 ### Provenance des références communautaires
 
