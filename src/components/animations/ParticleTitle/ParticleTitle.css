@@ -5,9 +5,9 @@
   width: 100%;
   max-width: 16em;
   margin: 20px 0 24px;
-  color: var(--brand-strong);
+  color: var(--brand-deep);
   font-size: clamp(2.4rem, 7vw, 6rem);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
   text-align: left;
@@ -21,9 +21,9 @@
 }
 
 .particle-title::selection {
-  color: var(--brand-strong);
+  color: var(--brand-deep);
   background-color: rgba(125, 211, 252, 0.5);
-  -webkit-text-fill-color: var(--brand-strong);
+  -webkit-text-fill-color: var(--brand-deep);
 }
 
 .particle-title__canvas {

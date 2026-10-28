@@ -40,9 +40,9 @@
 
 .about-hero__eyebrow {
   margin: 0;
-  color: var(--brand-shade-200);
-  font-size: 0.85rem;
-  font-weight: 500;
+  color: var(--brand-deep);
+  font-size: 0.9rem;
+  font-weight: 600;
   letter-spacing: 0.14em;
   line-height: 1.4;
   text-transform: uppercase;

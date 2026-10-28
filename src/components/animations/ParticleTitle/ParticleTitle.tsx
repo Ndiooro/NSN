@@ -131,15 +131,24 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
     let pausedAt: number | null = null;
     let pointer: { x: number; y: number } | null = null;
     let isDisplaced = false;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const supportsPointer = window.matchMedia(
       '(hover: hover) and (pointer: fine)',
     ).matches;
-    const strongColor =
-      getComputedStyle(document.documentElement)
-        .getPropertyValue('--brand-strong')
-        .trim() || '#0a7fb8';
-    const particleColors = [strongColor, '#009ee0', '#7dd3fc'];
+    const rootStyles = getComputedStyle(document.documentElement);
+    const particleColors = [
+      rootStyles.getPropertyValue('--brand-deep').trim() || '#075a85',
+      rootStyles.getPropertyValue('--ink-deep').trim() || '#0b2233',
+      rootStyles.getPropertyValue('--brand-strong').trim() || '#0a7fb8',
+    ];
+    let randomState = 0x4a3b2c1d;
+    const random = () => {
+      randomState = (randomState + 0x6d2b79f5) | 0;
+      let value = randomState;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+    };
 
     const drawParticles = () => {
       const rect = heading.getBoundingClientRect();
@@ -296,6 +305,7 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
           : Number.parseFloat(computed.lineHeight);
       const lines = getTextLines(textNode, rect);
 
+      randomState = 0x4a3b2c1d;
       context.font = `${computed.fontWeight} ${fontSize}px ${computed.fontFamily}`;
       const spacedContext = context as CanvasRenderingContext2D & {
         letterSpacing?: string;
@@ -303,7 +313,7 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
       spacedContext.letterSpacing = computed.letterSpacing;
       context.textAlign = 'left';
       context.textBaseline = 'alphabetic';
-      context.fillStyle = strongColor;
+      context.fillStyle = particleColors[0];
 
       for (const line of lines) {
         const lineText = textNode.data.slice(line.start, line.end);
@@ -314,30 +324,36 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
 
       const image = context.getImageData(0, 0, width, height);
       const maxParticles = window.innerWidth < 760 ? 1800 : 3500;
-      const samplingStep = Math.max(
-        2,
-        Math.floor(Math.sqrt((width * height) / (maxParticles * 3))),
-      );
-      const samples: Array<{ x: number; y: number }> = [];
+      let samplingStep = Math.max(2, Math.ceil(dpr * 3.1));
+      let samples: Array<{ x: number; y: number }> = [];
 
-      for (let y = 0; y < height; y += samplingStep) {
-        for (let x = 0; x < width; x += samplingStep) {
-          const alpha = image.data[(y * width + x) * 4 + 3];
-          if (alpha > 80) {
-            samples.push({ x: (x + 0.5) / dpr, y: (y + 0.5) / dpr });
+      do {
+        samples = [];
+        for (let y = 0; y < height; y += samplingStep) {
+          for (let x = 0; x < width; x += samplingStep) {
+            const alpha = image.data[(y * width + x) * 4 + 3];
+            if (alpha > 80) {
+              samples.push({ x: (x + 0.5) / dpr, y: (y + 0.5) / dpr });
+            }
           }
         }
-      }
+        if (samples.length > maxParticles) samplingStep += 1;
+      } while (samples.length > maxParticles);
 
       if (samples.length === 0) return false;
 
-      const sampleStep = Math.max(1, Math.ceil(samples.length / maxParticles));
+      const particleRadius = Math.max(
+        1.1,
+        (samplingStep / dpr) * 0.36,
+      );
       const nextParticles: Particle[] = [];
-      for (let i = 0; i < samples.length; i += sampleStep) {
+      for (let i = 0; i < samples.length; i += 1) {
         const sample = samples[i];
-        const spreadX = (Math.random() - 0.5) * 34;
-        const spreadY = (Math.random() - 0.5) * 28;
-        const colorRoll = Math.random();
+        const spreadX = (random() - 0.5) * 34;
+        const spreadY = (random() - 0.5) * 28;
+        const colorRoll = random();
+        const color =
+          colorRoll < 0.6 ? 0 : colorRoll < 0.85 ? 1 : 2;
 
         nextParticles.push({
           x: assembled ? sample.x : sample.x + spreadX,
@@ -346,8 +362,8 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
           startY: assembled ? sample.y : sample.y + spreadY,
           targetX: sample.x,
           targetY: sample.y,
-          color: colorRoll > 0.94 ? 2 : colorRoll > 0.72 ? 1 : 0,
-          radius: 1.15 + Math.random() * 0.4,
+          color,
+          radius: particleRadius,
         });
       }
 

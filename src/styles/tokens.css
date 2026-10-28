@@ -11,6 +11,8 @@
   /* Premier bleu de la charte (original) : décoratif (traits, accents, puces) */
   --brand: #009ee0;
   --brand-strong: #0a7fb8;
+  --brand-deep: #075a85;
+  --ink-deep: #0b2233;
 
   /* === NUANCES DE BLEU (TINTS - Éclaircissements de 90% à 10%) === */
   --brand-tint-90: #19a8e3;
