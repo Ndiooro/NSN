@@ -175,7 +175,7 @@ La directive `/* eslint-disable */` est présente en en-tête du fichier pour au
 - **Fichiers** : `src/components/animations/AuroraBackground/AuroraBackground.tsx` & `.css`
 - **Type** : Client Component minimal, limité à l’observation de visibilité avec `IntersectionObserver`.
 - **Rôle** : Fond clair composé de nappes radiales et répétées en bleu ciel, bleu clair et blanc, sur le dégradé `--hero-bg1` → `--hero-bg2`.
-- **Couleurs** : Modifier les couleurs et opacités des trois calques `background-image` dans `AuroraBackground.css`. La base et le fondu bas utilisent `--hero-bg1`, `--hero-bg2` et `--surface-warm`.
+- **Couleurs** : Modifier les couleurs et opacités des deux calques `background-image` dans `AuroraBackground.css`. La base et le fondu bas utilisent `--hero-bg1`, `--hero-bg2` et `--surface-warm`.
 - **Performance** : Le calque est deux fois plus large que son conteneur. Le mouvement de 60 s anime uniquement `transform: translate3d(...)`, jamais `background-position`. `animation-play-state` reste à `paused` hors écran et passe à `running` pendant l’intersection.
 - **Accessibilité** : Le calque est `aria-hidden`, non interactif et sa couche mobile s’arrête sous `prefers-reduced-motion: reduce`; le dégradé reste statique.
 
