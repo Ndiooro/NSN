@@ -12,13 +12,20 @@ interface Particle {
   y: number;
   targetX: number;
   targetY: number;
-  startX: number;
-  startY: number;
+  fieldX: number;
+  fieldY: number;
   normalizedX: number;
+  normalizedY: number;
   randomA: number;
+  randomB: number;
+  randomC: number;
   color: number;
   radius: number;
   opacity: number;
+  sourceX: number;
+  sourceY: number;
+  sourceWidth: number;
+  sourceHeight: number;
 }
 
 interface Glyph {
@@ -31,6 +38,7 @@ interface Glyph {
 interface SampledTitle {
   particles: Particle[];
   glyphs: Glyph[];
+  textCanvas: HTMLCanvasElement;
 }
 
 interface TextLine {
@@ -39,7 +47,8 @@ interface TextLine {
 }
 
 type TitleMode = "pending" | "canvas" | "static";
-type AnimationPhase = "pre" | "gathering" | "rest";
+type AnimationPhase = "pre" | "gathering" | "text" | "dissolving" | "field";
+type MotionMode = "smoke" | "vortex" | "sand" | "burst" | "sweep" | "absorb";
 
 type NavigatorWithConnection = Navigator & {
   connection?: {
@@ -48,18 +57,32 @@ type NavigatorWithConnection = Navigator & {
 };
 
 const INTRO_DELAY_MS = 500;
-const TRAVEL_DURATION_MS = 1800;
+const TRAVEL_DURATION_MS = 4200;
+const TEXT_HOLD_MS = 5200;
+const FIELD_HOLD_MS = 1400;
+const MOTION_SPREAD = 0.55;
 const RESIZE_DEBOUNCE_MS = 100;
 const PARTICLE_SEED = 0x4a3b2c1d;
+const TITLE_TEXT_COLOR = "#009ff0";
+const MOTION_MODES: MotionMode[] = [
+  "smoke",
+  "vortex",
+  "sand",
+  "burst",
+  "sweep",
+  "absorb",
+];
 
 function clearCanvas(
   canvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
   dpr: number,
+  offsetX = 0,
+  offsetY = 0,
 ) {
   context.setTransform(1, 0, 0, 1, 0, 0);
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.setTransform(dpr, 0, 0, dpr, 0, 0);
+  context.setTransform(dpr, 0, 0, dpr, offsetX * dpr, offsetY * dpr);
 }
 
 function createRng(seed: number) {
@@ -78,22 +101,104 @@ function easeInOut(value: number) {
   return clamped < 0.5 ? 4 * clamped ** 3 : 1 - (-2 * clamped + 2) ** 3 / 2;
 }
 
+function smooth(value: number) {
+  const clamped = Math.min(1, Math.max(0, value));
+  return clamped * clamped * (3 - 2 * clamped);
+}
+
+function createMotionModePicker(random: () => number) {
+  let bag: MotionMode[] = [];
+  let previous: MotionMode | null = null;
+
+  return () => {
+    if (bag.length === 0) {
+      bag = [...MOTION_MODES];
+      for (let index = bag.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(random() * (index + 1));
+        [bag[index], bag[swapIndex]] = [bag[swapIndex], bag[index]];
+      }
+      if (bag[bag.length - 1] === previous) {
+        [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
+      }
+    }
+
+    previous = bag.pop()!;
+    return previous;
+  };
+}
+
+function getMotionPlan(mode: MotionMode, particle: Particle) {
+  switch (mode) {
+    case "smoke":
+      return {
+        delay: (1 - particle.normalizedY) * 0.35 + particle.randomC * 0.25,
+        bend: (particle.randomA - 0.5) * 150,
+      };
+    case "vortex":
+      return {
+        delay:
+          (Math.hypot(particle.normalizedX - 0.5, particle.normalizedY - 0.5) /
+            Math.SQRT1_2) *
+            0.9 +
+          particle.randomC * 0.15,
+        bend: (particle.randomB > 0.5 ? 1 : -1) * (90 + particle.randomA * 140),
+      };
+    case "sand":
+      return {
+        delay: particle.normalizedX * 0.6 + particle.randomC * 0.18,
+        bend: (particle.randomA - 0.5) * 60,
+      };
+    case "burst":
+      return {
+        delay: particle.randomC * 0.1,
+        bend: (particle.randomB - 0.5) * 26,
+      };
+    case "sweep":
+      return {
+        delay: (1 - particle.normalizedX) * 0.6 + particle.randomC * 0.18,
+        bend: -(60 + particle.randomA * 90),
+      };
+    case "absorb":
+      return {
+        delay: particle.randomA * 0.55,
+        bend: (particle.randomB - 0.5) * 100,
+      };
+  }
+}
+
+function bowAt(
+  from: [number, number],
+  to: [number, number],
+  bend: number,
+  progress: number,
+) {
+  const eased = easeInOut(progress);
+  const deltaX = to[0] - from[0];
+  const deltaY = to[1] - from[1];
+  const distance = Math.hypot(deltaX, deltaY) || 1;
+  const bow = Math.sin(eased * Math.PI) * bend;
+
+  return [
+    from[0] + deltaX * eased - (deltaY / distance) * bow,
+    from[1] + deltaY * eased + (deltaX / distance) * bow,
+  ] as const;
+}
+
 function sampleTitle(
   heading: HTMLHeadingElement,
-  canvas: HTMLCanvasElement,
-  context: CanvasRenderingContext2D,
   dpr: number,
-  particleColors: string[],
 ): SampledTitle | null {
   const rect = heading.getBoundingClientRect();
   if (rect.width <= 0 || rect.height <= 0) return null;
 
   const width = Math.ceil(rect.width * dpr);
   const height = Math.ceil(rect.height * dpr);
-  canvas.width = width;
-  canvas.height = height;
+  const textCanvas = document.createElement("canvas");
+  textCanvas.width = width;
+  textCanvas.height = height;
+  const context = textCanvas.getContext("2d", { willReadFrequently: true });
+  if (!context) return null;
   context.setTransform(dpr, 0, 0, dpr, 0, 0);
-  clearCanvas(canvas, context, dpr);
 
   const textNode = Array.from(heading.childNodes).find(
     (node): node is Text => node.nodeType === Node.TEXT_NODE,
@@ -141,7 +246,7 @@ function sampleTitle(
   if (lines.length === 0) return null;
 
   const glyphs: Glyph[] = [];
-  context.fillStyle = particleColors[0];
+  context.fillStyle = TITLE_TEXT_COLOR;
   for (const line of lines) {
     const lineText = line.glyphs.map((glyph) => glyph.text).join("");
     const metrics = context.measureText(lineText);
@@ -157,7 +262,14 @@ function sampleTitle(
   const image = context.getImageData(0, 0, width, height);
   const maxParticles = window.innerWidth < 760 ? 1800 : 3500;
   let samplingStep = Math.max(2, Math.ceil(dpr * 3.1));
-  let samples: Array<{ x: number; y: number }> = [];
+  let samples: Array<{
+    x: number;
+    y: number;
+    sourceX: number;
+    sourceY: number;
+    sourceWidth: number;
+    sourceHeight: number;
+  }> = [];
 
   do {
     samples = [];
@@ -184,6 +296,10 @@ function sampleTitle(
           samples.push({
             x: weightedX / totalWeight / dpr,
             y: weightedY / totalWeight / dpr,
+            sourceX: cellX,
+            sourceY: cellY,
+            sourceWidth: cellWidth,
+            sourceHeight: cellHeight,
           });
         }
       }
@@ -212,31 +328,42 @@ function sampleTitle(
   const particles = samples.map((sample) => {
     const angle = random() * Math.PI * 2;
     const radius = Math.sqrt(random());
-    const startX =
-      rect.width / 2 + Math.cos(angle) * rect.width * 0.42 * radius;
-    const startY =
-      rect.height / 2 + Math.sin(angle) * rect.height * 0.34 * radius;
+    const fieldX =
+      rect.width / 2 +
+      Math.cos(angle) * rect.width * 0.68 * radius;
+    const fieldY =
+      rect.height / 2 +
+      Math.sin(angle) * rect.height * 0.85 * radius;
     const randomA = random();
+    const randomB = random();
+    const randomC = random();
     const colorRoll = random();
 
     return {
-      x: startX,
-      y: startY,
+      x: fieldX,
+      y: fieldY,
       targetX: sample.x,
       targetY: sample.y,
-      startX,
-      startY,
+      fieldX,
+      fieldY,
       normalizedX:
         (sample.x - bounds.minX) / Math.max(1, bounds.maxX - bounds.minX),
+      normalizedY:
+        (sample.y - bounds.minY) / Math.max(1, bounds.maxY - bounds.minY),
       randomA,
+      randomB,
+      randomC,
       color: colorRoll < 0.6 ? 0 : colorRoll < 0.85 ? 1 : 2,
       radius: particleRadius,
       opacity: 0,
+      sourceX: sample.sourceX,
+      sourceY: sample.sourceY,
+      sourceWidth: sample.sourceWidth,
+      sourceHeight: sample.sourceHeight,
     };
   });
 
-  clearCanvas(canvas, context, dpr);
-  return { particles, glyphs };
+  return { particles, glyphs, textCanvas };
 }
 
 export function ParticleTitle({ text }: ParticleTitleProps) {
@@ -308,18 +435,9 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
             return;
           }
 
-          const rootStyles = getComputedStyle(document.documentElement);
-          const particleColors = [
-            rootStyles.getPropertyValue("--brand-deep").trim() || "#075a85",
-            rootStyles.getPropertyValue("--ink-deep").trim() || "#0b2233",
-            rootStyles.getPropertyValue("--brand-strong").trim() || "#0a7fb8",
-          ];
           const sampled = sampleTitle(
             heading,
-            canvas,
-            context,
             Math.min(window.devicePixelRatio || 1, 2),
-            particleColors,
           );
           if (!sampled) {
             fallback("ParticleTitle sampled no glyphs; showing plain text.");
@@ -376,37 +494,58 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
     let phaseStart: number | null = null;
     let pausedAt: number | null = null;
     let frameId: number | null = null;
-    let introTimer: number | null = null;
-    let introDeadline: number | null = null;
-    let introRemaining = INTRO_DELAY_MS;
+    let phaseTimer: number | null = null;
+    let phaseTimerDeadline: number | null = null;
+    let phaseTimerRemaining = 0;
+    let phaseTimerAction: (() => void) | null = null;
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     let particles: Particle[] = [];
     let glyphs: Glyph[] = [];
+    let textCanvas: HTMLCanvasElement | null = null;
     let maxDelay = 0;
     let plans: Array<{ delay: number; bend: number }> = [];
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rootStyles = getComputedStyle(document.documentElement);
+    let canvasOffsetX = 0;
+    let canvasOffsetY = 0;
     const particleColors = [
-      rootStyles.getPropertyValue("--brand-deep").trim() || "#075a85",
-      rootStyles.getPropertyValue("--ink-deep").trim() || "#0b2233",
-      rootStyles.getPropertyValue("--brand-strong").trim() || "#0a7fb8",
+      TITLE_TEXT_COLOR,
+      TITLE_TEXT_COLOR,
+      TITLE_TEXT_COLOR,
     ];
+    const motionRandom = createRng(PARTICLE_SEED ^ 0x5a5a);
+    const fieldRandom = createRng(PARTICLE_SEED ^ 0xa5a5);
+    const pickMotionMode = createMotionModePicker(motionRandom);
+    let motionMode = pickMotionMode();
     const debugMode =
       process.env.NODE_ENV !== "production" &&
       new URLSearchParams(window.location.search).get("debug") === "particles";
     let inView = !("IntersectionObserver" in window);
     let active = document.visibilityState !== "hidden" && inView;
 
-    const drawParticles = () => {
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      clearCanvas(canvas, context, dpr);
+    const drawTitle = () => {
+      if (!textCanvas) return;
+      clearCanvas(canvas, context, dpr, canvasOffsetX, canvasOffsetY);
       if (debugMode) {
+        const computed = getComputedStyle(heading);
+        context.font = `${computed.fontWeight} ${computed.fontSize} ${computed.fontFamily}`;
+        context.textBaseline = "alphabetic";
         context.fillStyle = "rgba(255, 0, 0, 0.4)";
         for (const glyph of glyphs) {
           context.fillText(glyph.text, glyph.x, glyph.baseline);
         }
       }
+      context.globalAlpha = 1;
+      context.drawImage(
+        textCanvas,
+        0,
+        0,
+        textCanvas.width / dpr,
+        textCanvas.height / dpr,
+      );
+      context.globalAlpha = 1;
+    };
 
+    const drawParticles = () => {
       const opacitySteps = 10;
       const buckets = particleColors.map(() =>
         Array.from({ length: opacitySteps }, () => [] as Particle[]),
@@ -451,8 +590,40 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
       context.globalAlpha = 1;
     };
 
+    const schedulePhaseTimer = () => {
+      if (!active || phaseTimer !== null || phaseTimerAction === null) return;
+      phaseTimerDeadline = performance.now() + phaseTimerRemaining;
+      phaseTimer = window.setTimeout(() => {
+        phaseTimer = null;
+        phaseTimerDeadline = null;
+        phaseTimerRemaining = 0;
+        const action = phaseTimerAction;
+        phaseTimerAction = null;
+        action?.();
+      }, phaseTimerRemaining);
+    };
+
+    const startPhaseTimer = (duration: number, action: () => void) => {
+      phaseTimerRemaining = duration;
+      phaseTimerAction = action;
+      schedulePhaseTimer();
+    };
+
+    const pausePhaseTimer = (now: number) => {
+      if (phaseTimer === null || phaseTimerDeadline === null) return;
+      phaseTimerRemaining = Math.max(0, phaseTimerDeadline - now);
+      window.clearTimeout(phaseTimer);
+      phaseTimer = null;
+      phaseTimerDeadline = null;
+    };
+
     const scheduleFrame = () => {
-      if (active && frameId === null && phase === "gathering") {
+      if (
+        active &&
+        !cancelled &&
+        frameId === null &&
+        (phase === "gathering" || phase === "dissolving")
+      ) {
         frameId = window.requestAnimationFrame(renderFrame);
       }
     };
@@ -462,67 +633,166 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
       if (
         !active ||
         cancelled ||
-        phase !== "gathering" ||
+        (phase !== "gathering" && phase !== "dissolving") ||
         phaseStart === null
       ) {
         return;
       }
 
       const progress = Math.min(1, (now - phaseStart) / TRAVEL_DURATION_MS);
-      const spread = 0.55;
+      const gathering = phase === "gathering";
+
+      clearCanvas(canvas, context, dpr, canvasOffsetX, canvasOffsetY);
+
+      if (debugMode) {
+        const computed = getComputedStyle(heading);
+        context.font = `${computed.fontWeight} ${computed.fontSize} ${computed.fontFamily}`;
+        context.textBaseline = "alphabetic";
+        context.fillStyle = "rgba(255, 0, 0, 0.4)";
+        for (const glyph of glyphs) {
+          context.fillText(glyph.text, glyph.x, glyph.baseline);
+        }
+      }
+
       for (let index = 0; index < particles.length; index += 1) {
         const particle = particles[index];
         const plan = plans[index];
         const delayProgress = maxDelay === 0 ? 0 : plan.delay / maxDelay;
         const localProgress = Math.min(
           1,
-          Math.max(0, (progress - delayProgress * spread) / (1 - spread)),
+          Math.max(
+            0,
+            (progress - delayProgress * MOTION_SPREAD) / (1 - MOTION_SPREAD),
+          ),
         );
-        const eased = easeInOut(localProgress);
-        const deltaX = particle.targetX - particle.startX;
-        const deltaY = particle.targetY - particle.startY;
-        const distance = Math.hypot(deltaX, deltaY) || 1;
-        const curve = Math.sin(eased * Math.PI) * plan.bend;
-        particle.x =
-          particle.startX + deltaX * eased - (deltaY / distance) * curve;
-        particle.y =
-          particle.startY + deltaY * eased + (deltaX / distance) * curve;
-        particle.opacity = localProgress;
+        const from: [number, number] = gathering
+          ? [particle.fieldX, particle.fieldY]
+          : [particle.targetX, particle.targetY];
+        const to: [number, number] = gathering
+          ? [particle.targetX, particle.targetY]
+          : [particle.fieldX, particle.fieldY];
+        const position = bowAt(
+          from,
+          to,
+          gathering ? -plan.bend : plan.bend,
+          localProgress,
+        );
+        particle.x = position[0];
+        particle.y = position[1];
+
+        const textOpacity = gathering
+          ? smooth((localProgress - 0.82) / 0.18)
+          : 1 - smooth(localProgress / 0.18);
+        const particleOpacity = gathering
+          ? smooth(localProgress / 0.15) * (1 - textOpacity)
+          : smooth(localProgress / 0.15) *
+            (1 - smooth((localProgress - 0.85) / 0.15));
+
+        if (textCanvas && textOpacity > 0.002) {
+          context.globalAlpha = textOpacity;
+          context.drawImage(
+            textCanvas,
+            particle.sourceX,
+            particle.sourceY,
+            particle.sourceWidth,
+            particle.sourceHeight,
+            particle.sourceX / dpr,
+            particle.sourceY / dpr,
+            particle.sourceWidth / dpr,
+            particle.sourceHeight / dpr,
+          );
+        }
+        particle.opacity = particleOpacity;
       }
 
-      if (progress === 1) {
-        phase = "rest";
-        phaseStart = null;
+      context.globalAlpha = 1;
+      drawParticles();
+      if (progress < 1) {
+        scheduleFrame();
+        return;
+      }
+
+      if (gathering) {
         for (const particle of particles) {
           particle.x = particle.targetX;
           particle.y = particle.targetY;
-          particle.opacity = 1;
+          particle.opacity = 0;
         }
+        enterPhase("text");
+      } else {
+        for (const particle of particles) {
+          particle.x = particle.fieldX;
+          particle.y = particle.fieldY;
+          particle.opacity = 0;
+        }
+        enterPhase("field");
       }
-      drawParticles();
-      if (phase === "gathering") scheduleFrame();
     };
 
-    const scheduleIntro = () => {
-      if (!active || phase !== "pre" || introTimer !== null) return;
-      introDeadline = performance.now() + introRemaining;
-      introTimer = window.setTimeout(() => {
-        introTimer = null;
-        introDeadline = null;
-        introRemaining = 0;
-        if (cancelled || !active) return;
-        phase = "gathering";
+    const redrawCurrentPhase = () => {
+      if (phase === "text") {
+        drawTitle();
+      } else if (phase === "field" || phase === "pre") {
+        clearCanvas(canvas, context, dpr, canvasOffsetX, canvasOffsetY);
+      } else if (active) {
         phaseStart = performance.now();
         scheduleFrame();
-      }, introRemaining);
+      }
     };
 
-    const pauseIntro = (now: number) => {
-      if (introTimer === null || introDeadline === null) return;
-      introRemaining = Math.max(0, introDeadline - now);
-      window.clearTimeout(introTimer);
-      introTimer = null;
-      introDeadline = null;
+    const rerollField = () => {
+      const rect = heading.getBoundingClientRect();
+      for (const particle of particles) {
+        const angle = fieldRandom() * Math.PI * 2;
+        const radius = Math.sqrt(fieldRandom());
+        particle.fieldX =
+          rect.width / 2 +
+          Math.cos(angle) * rect.width * 0.68 * radius;
+        particle.fieldY =
+          rect.height / 2 +
+          Math.sin(angle) * rect.height * 0.85 * radius;
+      }
+    };
+
+    const enterPhase = (nextPhase: AnimationPhase) => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+        frameId = null;
+      }
+      if (phaseTimer !== null) {
+        window.clearTimeout(phaseTimer);
+        phaseTimer = null;
+        phaseTimerDeadline = null;
+      }
+      phaseTimerAction = null;
+      phase = nextPhase;
+      phaseStart = performance.now();
+
+      if (nextPhase === "pre") {
+        clearCanvas(canvas, context, dpr, canvasOffsetX, canvasOffsetY);
+        startPhaseTimer(INTRO_DELAY_MS, () => enterPhase("gathering"));
+      } else if (nextPhase === "text") {
+        drawTitle();
+        startPhaseTimer(TEXT_HOLD_MS, () => enterPhase("dissolving"));
+      } else if (nextPhase === "field") {
+        clearCanvas(canvas, context, dpr, canvasOffsetX, canvasOffsetY);
+        startPhaseTimer(FIELD_HOLD_MS, () => enterPhase("gathering"));
+      } else {
+        if (nextPhase === "dissolving") {
+          motionMode = pickMotionMode();
+          rerollField();
+          updateMotionPlans();
+        }
+        phaseStart = performance.now();
+        for (const particle of particles) {
+          particle.x =
+            nextPhase === "gathering" ? particle.fieldX : particle.targetX;
+          particle.y =
+            nextPhase === "gathering" ? particle.fieldY : particle.targetY;
+          particle.opacity = 0;
+        }
+        scheduleFrame();
+      }
     };
 
     const updateActiveState = () => {
@@ -533,7 +803,7 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
 
       if (!active) {
         if (phaseStart !== null) pausedAt = now;
-        pauseIntro(now);
+        pausePhaseTimer(now);
         if (frameId !== null) {
           window.cancelAnimationFrame(frameId);
           frameId = null;
@@ -545,7 +815,7 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
         phaseStart += now - pausedAt;
         pausedAt = null;
       }
-      scheduleIntro();
+      schedulePhaseTimer();
       scheduleFrame();
     };
 
@@ -562,45 +832,38 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
         : null;
     intersectionObserver?.observe(heading);
 
-    const rebuildParticles = () => {
-      const sampled = sampleTitle(
-        heading,
-        canvas,
-        context,
-        dpr,
-        particleColors,
-      );
-      if (!sampled) {
-        throw new Error("The resized heading produced no particles.");
-      }
-
-      particles = sampled.particles;
-      glyphs = sampled.glyphs;
-      plans = particles.map((particle) => ({
-        delay: particle.normalizedX,
-        bend: (particle.randomA - 0.5) * 30,
-      }));
+    const updateMotionPlans = () => {
+      plans = particles.map((particle) => getMotionPlan(motionMode, particle));
       maxDelay = plans.reduce(
         (maximum, plan) => Math.max(maximum, plan.delay),
         0,
       );
+    };
 
-      if (phase === "rest") {
-        for (const particle of particles) {
-          particle.x = particle.targetX;
-          particle.y = particle.targetY;
-          particle.opacity = 1;
-        }
-        drawParticles();
-      } else if (phase === "gathering") {
-        if (frameId !== null) {
-          window.cancelAnimationFrame(frameId);
-          frameId = null;
-        }
-        if (active) renderFrame(performance.now());
-      } else {
-        clearCanvas(canvas, context, dpr);
+    const applySample = (sampled: SampledTitle) => {
+      particles = sampled.particles;
+      glyphs = sampled.glyphs;
+      textCanvas = sampled.textCanvas;
+      const rect = heading.getBoundingClientRect();
+      canvasOffsetX = rect.width * 0.7;
+      canvasOffsetY = rect.height * 0.9;
+      canvas.style.left = `${-canvasOffsetX}px`;
+      canvas.style.top = `${-canvasOffsetY}px`;
+      canvas.style.width = `${rect.width * 2.4}px`;
+      canvas.style.height = `${rect.height * 2.8}px`;
+      canvas.width = Math.ceil(rect.width * 2.4 * dpr);
+      canvas.height = Math.ceil(rect.height * 2.8 * dpr);
+      updateMotionPlans();
+    };
+
+    const rebuildParticles = () => {
+      const sampled = sampleTitle(heading, dpr);
+      if (!sampled) {
+        throw new Error("The resized heading produced no particles.");
       }
+
+      applySample(sampled);
+      redrawCurrentPhase();
     };
 
     const initializeParticles = () => {
@@ -608,17 +871,8 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
       if (!sampled) {
         throw new Error("ParticleTitle has no sampled glyph data.");
       }
-      particles = sampled.particles;
-      glyphs = sampled.glyphs;
-      plans = particles.map((particle) => ({
-        delay: particle.normalizedX,
-        bend: (particle.randomA - 0.5) * 30,
-      }));
-      maxDelay = plans.reduce(
-        (maximum, plan) => Math.max(maximum, plan.delay),
-        0,
-      );
-      clearCanvas(canvas, context, dpr);
+      applySample(sampled);
+      rerollField();
     };
 
     let lastRect = heading.getBoundingClientRect();
@@ -653,7 +907,7 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
 
     try {
       initializeParticles();
-      scheduleIntro();
+      enterPhase("pre");
     } catch (error) {
       console.error("ParticleTitle could not initialize its particles.", error);
       window.setTimeout(() => setMode("static"), 0);
@@ -662,7 +916,7 @@ export function ParticleTitle({ text }: ParticleTitleProps) {
     return () => {
       cancelled = true;
       if (frameId !== null) window.cancelAnimationFrame(frameId);
-      if (introTimer !== null) window.clearTimeout(introTimer);
+      if (phaseTimer !== null) window.clearTimeout(phaseTimer);
       if (resizeTimer !== null) clearTimeout(resizeTimer);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       intersectionObserver?.disconnect();

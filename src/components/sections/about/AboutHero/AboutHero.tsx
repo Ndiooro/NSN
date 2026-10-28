@@ -22,12 +22,7 @@ export async function AboutHero() {
           {t('eyebrow')}
         </FadeIn>
         <ParticleTitle text={t('title')} />
-        <DrawRule
-          align="left"
-          delayMs={1900}
-          durationMs={900}
-          className="about-hero__rule"
-        />
+       
       </div>
     </section>
   );

@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 10em;
   margin: 20px 0 20px;
-  color: var(--brand-deep);
+  color: #009ff0;
   font-size: clamp(7.5rem, 9vw, 8rem);
   font-weight: 600;
   line-height: 1.08;
@@ -18,15 +18,16 @@
 }
 
 .particle-title::selection {
-  color: var(--brand-deep);
+  color: #009ff0;
   background-color: rgba(0, 159, 240, 0.25);
-  -webkit-text-fill-color: var(--brand-deep);
+  -webkit-text-fill-color: #009ff0;
 }
 
 .particle-title__canvas {
   position: absolute;
   z-index: 2;
-  inset: 0;
+  top: 0;
+  left: 0;
   display: none;
   width: 100%;
   height: 100%;

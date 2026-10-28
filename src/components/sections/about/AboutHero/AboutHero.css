@@ -21,33 +21,35 @@
   width: 100%;
   max-width: 70rem;
   margin-inline: auto;
-  text-align: left;
+  text-align: center;
 }
 
 .about-hero__veil {
   position: absolute;
   z-index: -1;
   inset: -clamp(2rem, 6vw, 5rem) -clamp(1rem, 5vw, 4rem);
+  
   background: radial-gradient(
     ellipse at 16% 50%,
     rgba(255, 255, 255, 0.97) 0%,
     rgba(255, 255, 255, 0.9) 38%,
-    rgba(255, 255, 255, 0.42) 63%,
+    rgb(3, 172, 244) 63%,
     transparent 82%
   );
   pointer-events: none;
 }
 
+
 .about-hero__eyebrow {
-  margin: 0;
-  color: var(--brand-deep);
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  margin: 0 0 0rem 0;
+  font-size: clamp(1.55rem, 1.3vw, 1.0625rem);
+  font-weight: 300;
   line-height: 1.4;
+  letter-spacing: normal;
+  text-align: center;
+  color: #009EE0;
   text-transform: uppercase;
 }
-
 .about-hero__rule {
   max-width: 16rem;
 }

@@ -3,10 +3,11 @@
   z-index: 0;
   inset: 0;
   overflow: hidden;
-  background: var(--hero-bg1);
+  background: #fff;
   pointer-events: none;
 }
 
+/*
 .aurora-background::before {
   position: absolute;
   top: -20%;
@@ -83,3 +84,4 @@
     will-change: auto;
   }
 }
+*/
