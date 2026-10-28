@@ -10,6 +10,7 @@
   /* === COULEUR ORIGINALE & BRAND === */
   /* Premier bleu de la charte (original) : décoratif (traits, accents, puces) */
   --brand: #009ee0;
+  --brand-strong: #0a7fb8;
 
   /* === NUANCES DE BLEU (TINTS - Éclaircissements de 90% à 10%) === */
   --brand-tint-90: #19a8e3;
@@ -43,6 +44,7 @@
   /* === ARRIÈRE-PLANS DE SECTION === */
   --hero-bg1: #ffffff;
   --hero-bg2: #e8f4fb;
+  --surface-warm: #f4f2f1;
   --hero-halo: transparent;
 
   /* === TYPOGRAPHIE & CONTRASTE === */

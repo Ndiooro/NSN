@@ -22,7 +22,10 @@ Ce document rassemble les règles d'architecture et les conventions de développ
    - Les routes sont bilingues (`/fr` et `/en`), avec redirection automatique vers `/fr` par défaut.
    - Toujours employer l'apostrophe typographique (`’`) dans les chaînes françaises et anglaises.
 
-4. **Design Tokens & Nuances Officielles (reference/colors.png)** :
+4. **Intégration de composants communautaires** :
+   - Intégrer un composant de la communauté (21st.dev) : copier, recolorer, auditer l'accessibilité et la performance.
+
+5. **Design Tokens & Nuances Officielles (reference/colors.png)** :
    - Les couleurs, durées et courbes d'animation sont déclarées sous forme de variables CSS dans `src/styles/tokens.css`.
    - **Premier bleu (original)** : `--brand: #009ee0` (décoratif, traits, badges).
    - **Tints de bleu** : `--brand-tint-90` (`#19a8e3`) jusqu'à `--brand-tint-10` (`#e5f5fc`).

@@ -26,5 +26,15 @@
       "transform": "We help modernize your industry",
       "paragraph": "A subsidiary of the NICOMATIC Group, present in around twenty countries worldwide, we design custom industrial machines, support businesses, and develop innovative technology solutions to optimize processes and meet operational challenges. Our mission is to transform local industry through the synergy of our expertise in electronics, mechanics, and software. Discover how we propel your projects toward excellence."
     }
+  },
+  "About": {
+    "metadata": {
+      "title": "About | Nicomatic Senegal",
+      "description": "Discover Nicomatic Senegal’s story, from exploration to impact."
+    },
+    "hero": {
+      "eyebrow": "Our story",
+      "title": "From exploration to impact"
+    }
   }
 }

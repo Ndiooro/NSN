@@ -26,5 +26,15 @@
       "transform": "Nous accompagnons la modernisation de votre industrie",
       "paragraph": "Filiale du groupe NICOMATIC, présent dans une vingtaine de pays à travers le monde, nous concevons des machines industrielles sur mesure, accompagnons les entreprises et développons des solutions technologiques innovantes pour optimiser les processus et relever les défis opérationnels. Notre mission est de transformer l'industrie locale grâce à la synergie de nos expertises en électronique, mécanique et informatique. Découvrez comment nous propulsons vos projets vers l'excellence."
     }
+  },
+  "About": {
+    "metadata": {
+      "title": "À propos | Nicomatic Sénégal",
+      "description": "Découvrez l’histoire de Nicomatic Sénégal, de l’exploration à l’impact."
+    },
+    "hero": {
+      "eyebrow": "Notre histoire",
+      "title": "De l’exploration à l’impact"
+    }
   }
 }

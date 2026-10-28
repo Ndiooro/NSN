@@ -165,5 +165,34 @@ Antigravity n'est **jamais monté** et aucun contexte WebGL n'est alloué si :
 **Rendu du repli statique** : Un motif géométrique de points en CSS pur (`radial-gradient` de 1.5 px répété tous les 28 px, estompé par un masque radial centré à 50% 50% vers 70%), totalement figé sur fond blanc et sans aucun impact CPU/GPU.
 
 ### Exceptions ESLint du composant Antigravity
-Le composant `Antigravity.tsx` provenant de la bibliothèque tierce React Bits manipule `settingsRef.current = settings;` directement dans son corps de rendu pour synchroniser les paramètres sans réinstancier le contexte WebGL. 
+Le composant `Antigravity.tsx` provenant de la bibliothèque tierce React Bits manipule `settingsRef.current = settings;` directement dans son corps de rendu pour synchroniser les paramètres sans réinstancier le contexte WebGL.
 La directive `/* eslint-disable */` est présente en en-tête du fichier pour autoriser ce fonctionnement sans altérer le code source d'origine.
+
+---
+
+## 7. AuroraBackground
+
+- **Fichiers** : `src/components/animations/AuroraBackground/AuroraBackground.tsx` & `.css`
+- **Type** : Client Component minimal, limité à l’observation de visibilité avec `IntersectionObserver`.
+- **Rôle** : Fond clair composé de nappes radiales et répétées en bleu ciel, bleu clair et blanc, sur le dégradé `--hero-bg1` → `--hero-bg2`.
+- **Couleurs** : Modifier les couleurs et opacités des trois calques `background-image` dans `AuroraBackground.css`. La base et le fondu bas utilisent `--hero-bg1`, `--hero-bg2` et `--surface-warm`.
+- **Performance** : Le calque est deux fois plus large que son conteneur. Le mouvement de 60 s anime uniquement `transform: translate3d(...)`, jamais `background-position`. `animation-play-state` reste à `paused` hors écran et passe à `running` pendant l’intersection.
+- **Accessibilité** : Le calque est `aria-hidden`, non interactif et sa couche mobile s’arrête sous `prefers-reduced-motion: reduce`; le dégradé reste statique.
+
+## 8. ParticleTitle
+
+- **Fichiers** : `src/components/animations/ParticleTitle/ParticleTitle.tsx` & `.css`
+- **Type** : Client Component, aucun paquet supplémentaire.
+- **Props** : `text: string` — le libellé traduit affiché dans le vrai `<h1>`.
+- **Principe accessible** : Le texte du `<h1>` fournit la sémantique, la sélection et la mise en page. Après chargement des polices et échantillonnage, seul sa couleur devient transparente; le canvas positionné en absolu, superposé au titre, est `aria-hidden` et `pointer-events: none`. Sans JavaScript ou canvas fonctionnel, le texte du titre reste visible.
+- **Échantillonnage** : Attend `document.fonts.ready`, mesure les lignes du nœud texte par `Range`, puis dessine ces lignes temporairement dans le canvas transparent avant d’échantillonner ses pixels. Le canvas final a le même bloc que le `<h1>`; `ResizeObserver` recalcule les positions avec un debounce de 100 ms.
+- **Animation et budget** : L’assemblage commence après 500 ms et dure environ 1,6 s. Le budget est plafonné à 3 500 particules sur ordinateur et 1 800 sous 760 px; le DPR est limité à 1,5. L’interaction pointeur, limitée à `hover: hover` et `pointer: fine`, repousse les particules de 8 px au maximum.
+- **Sommeil** : Une fois l’assemblage terminé, la boucle `requestAnimationFrame` s’arrête. Elle se réveille au mouvement du pointeur et s’arrête de nouveau quand les particules sont revenues au repos. Elle est aussi suspendue hors du viewport et quand l’onglet est masqué.
+- **Repli statique** : Aucun canvas n’est activé si `prefers-reduced-motion: reduce`, `navigator.connection.saveData` ou si le contexte 2D manque. Le titre reste en texte avec un fondu de 600 ms.
+
+### Provenance des références communautaires
+
+Le fichier Particle Title annoncé dans le brief n’était pas présent dans `reference/about-hero/` ni dans `reference/about/`; sa version locale a été écrite à partir du cahier des charges. La référence Aurora a ensuite été fournie dans la conversation et adaptée aux règles de ce projet. Aucun paquet tiers n’a été ajouté.
+
+- [Aurora Background — Manu Arora (`manuarora700`), 21st.dev](https://21st.dev/@manuarora700/components/aurora-background) : licence MIT, confirmée sur la fiche. Le fond est adapté du code fourni dans la conversation; la démo framer-motion n’est pas utilisée.
+- [Particle Title — saki (`yingwuyi6l6`), 21st.dev](https://21st.dev/@yingwuyi6l6/components/particle-title) : licence MIT, confirmée sur la fiche. La référence source attendue était `reference/about-hero/particle-title.tsx`.

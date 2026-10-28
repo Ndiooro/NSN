@@ -1,0 +1,89 @@
+.aurora-background {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--hero-bg1), var(--hero-bg2));
+  pointer-events: none;
+}
+
+.aurora-background::before {
+  position: absolute;
+  top: -12%;
+  left: -50%;
+  width: 200%;
+  height: 112%;
+  content: '';
+  background-image:
+    radial-gradient(
+      ellipse at 50% 12%,
+      rgba(125, 211, 252, 0.46) 0%,
+      rgba(195, 231, 250, 0.36) 24%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 50% 54%,
+      rgba(0, 158, 224, 0.2) 0%,
+      rgba(125, 211, 252, 0.24) 34%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse at 50% 78%,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(195, 231, 250, 0.34) 42%,
+      transparent 72%
+    );
+  background-repeat: repeat;
+  background-size:
+    50% 100%,
+    50% 100%,
+    50% 100%;
+  filter: blur(28px);
+  mask-image: radial-gradient(
+    ellipse at 78% 14%,
+    #000 0%,
+    rgba(0, 0, 0, 0.9) 34%,
+    transparent 78%
+  );
+  opacity: 0.88;
+  transform: translate3d(0, 0, 0);
+  animation: aurora-drift 60s linear infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+
+.aurora-background[data-in-view='true']::before {
+  animation-play-state: running;
+}
+
+.aurora-background::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 140px;
+  content: '';
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--surface-warm) 58%, transparent) 48%,
+    var(--surface-warm) 100%
+  );
+}
+
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-background::before {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+}
