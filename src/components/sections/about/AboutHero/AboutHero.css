@@ -7,12 +7,40 @@
   overflow: hidden;
   padding-top: calc(
     var(--header-offset, 72px) +
-      max(clamp(24px, 6vw, 96px), env(safe-area-inset-top))
+      max(clamp(8px, 2vw, 32px), env(safe-area-inset-top))
   );
-  padding-right: max(clamp(24px, 6vw, 96px), env(safe-area-inset-right));
-  padding-bottom: max(clamp(24px, 6vw, 96px), env(safe-area-inset-bottom));
-  padding-left: max(clamp(24px, 6vw, 96px), env(safe-area-inset-left));
+  padding-right: max(clamp(8px, 2vw, 32px), env(safe-area-inset-right));
+  padding-bottom: max(clamp(8px, 2vw, 32px), env(safe-area-inset-bottom));
+  padding-left: max(clamp(8px, 2vw, 32px), env(safe-area-inset-left));
   background-color: var(--hero-bg1);
+}
+
+.about-hero__scroll-hint {
+  position: absolute;
+  z-index: 15;
+  bottom: max(clamp(0.75rem, 1.5vw, 1.5rem), env(safe-area-inset-bottom));
+  left: 50%;
+  color: #009ff0;
+  font-size: 1.75rem;
+  transform: translateX(-50%);
+  animation: about-hero-scroll-hint 1.8s ease-in-out infinite;
+}
+
+@keyframes about-hero-scroll-hint {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-hero__scroll-hint {
+    animation: none;
+  }
 }
 
 .about-hero__content {
@@ -22,6 +50,7 @@
   max-width: 70rem;
   margin-inline: auto;
   text-align: center;
+  padding-bottom: max(clamp(18px, 3vw, 36px), env(safe-area-inset-bottom));
 }
 
 .about-hero__veil {

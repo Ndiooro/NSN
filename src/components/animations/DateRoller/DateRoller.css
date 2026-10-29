@@ -8,11 +8,12 @@
 
 .date-roller__visual {
   display: inline-flex;
+  column-gap: 0.03em;
 }
 
 .date-roller__window {
   display: block;
-  width: 0.66ch;
+  width: 0.62em;
   height: 1em;
   overflow: hidden;
 }

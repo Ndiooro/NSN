@@ -1,8 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { BlurLines } from "@/components/animations/BlurLines/BlurLines";
 import { DateRoller } from "@/components/animations/DateRoller/DateRoller";
-import { DrawRule } from "@/components/animations/DrawRule/DrawRule";
-import { FadeIn } from "@/components/animations/FadeIn/FadeIn";
 import { InView } from "@/components/animations/InView/InView";
 import { ScrollTimeline } from "./ScrollTimeline";
 import { storytellingSteps } from "./steps";
@@ -10,7 +7,6 @@ import "./Storytelling.css";
 
 export async function Storytelling() {
   const t = await getTranslations("About.story");
-  const heroT = await getTranslations("About.hero");
 
   return (
     <section className="storytelling">
@@ -23,15 +19,6 @@ export async function Storytelling() {
         `}</style>
       </noscript>
       <div className="storytelling__inner">
-        <header className="storytelling__header">
-          <h2 className="storytelling__headline">
-            <BlurLines lines={[heroT("eyebrow")]} />
-          </h2>
-          <FadeIn as="p" className="storytelling__subtitle">
-            {heroT("title")}
-          </FadeIn>
-          <DrawRule align="left" className="storytelling__rule" />
-        </header>
         <ScrollTimeline>
           {storytellingSteps.map((step) => {
             const Illustration = step.svg;
@@ -44,21 +31,6 @@ export async function Storytelling() {
                 data-align={step.align}
                 key={step.id}
               >
-                <div className="story-step__anchor-row">
-                  <span
-                    className="story-step__marker-slot"
-                    data-placeholder={step.id}
-                    aria-hidden="true"
-                  />
-                  <span
-                    className="story-step__anchor"
-                    data-anchor={step.id}
-                    aria-hidden="true"
-                  >
-                    {step.year}
-                  </span>
-                </div>
-
                 <div className="story-step__content">
                   <Illustration
                     className="story-step__illustration"

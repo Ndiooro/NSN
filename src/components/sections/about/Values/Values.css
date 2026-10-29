@@ -1,6 +1,6 @@
 .values {
   padding: clamp(4rem, 10vw, 8.75rem) clamp(24px, 6vw, 96px);
-  background-color: var(--surface-warm);
+  background-color: 000000;
 }
 
 .values__inner {

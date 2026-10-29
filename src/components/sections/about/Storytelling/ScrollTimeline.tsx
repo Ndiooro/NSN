@@ -1,16 +1,9 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { smoothstep } from "@/lib/smoothstep";
 
 interface ScrollTimelineProps {
   children: ReactNode;
-}
-
-interface AnchorMeasure {
-  anchor: HTMLElement;
-  offset: number;
-  placeholder: HTMLElement;
 }
 
 interface DrawMeasure {
@@ -44,18 +37,6 @@ export function ScrollTimeline({ children }: ScrollTimelineProps) {
 
     container.dataset.jsActive = "true";
 
-    const anchors = Array.from(
-      container.querySelectorAll<HTMLElement>("[data-anchor]"),
-    );
-    const anchorMeasures: AnchorMeasure[] = [];
-    anchors.forEach((anchor) => {
-      const placeholder = container.querySelector<HTMLElement>(
-        `[data-placeholder="${anchor.dataset.anchor}"]`,
-      );
-      if (placeholder) {
-        anchorMeasures.push({ anchor, offset: 0, placeholder });
-      }
-    });
     const drawMeasures: DrawMeasure[] = Array.from(
       container.querySelectorAll<HTMLElement>("[data-draw]"),
     ).map((element) => ({ element, height: 0, offset: 0, progress: 0 }));
@@ -64,16 +45,10 @@ export function ScrollTimeline({ children }: ScrollTimelineProps) {
     let runnerY = 0;
     let frameId: number | null = null;
     let isNearViewport = false;
-    let dockedIndex: number | null = null;
 
     const measure = () => {
       const containerRect = container.getBoundingClientRect();
       containerHeight = containerRect.height;
-      anchorMeasures.forEach((item) => {
-        const anchorRect = item.anchor.getBoundingClientRect();
-        item.offset =
-          anchorRect.top - containerRect.top + anchorRect.height * 0.5;
-      });
       drawMeasures.forEach((item) => {
         const rect = item.element.getBoundingClientRect();
         item.offset = rect.top - containerRect.top;
@@ -93,52 +68,16 @@ export function ScrollTimeline({ children }: ScrollTimelineProps) {
 
     const update = () => {
       frameId = null;
-      if (!isNearViewport || anchorMeasures.length === 0) return;
+      if (!isNearViewport) return;
 
       const containerTop = container.getBoundingClientRect().top;
       const viewportHeight = window.innerHeight;
-      const follow = viewportHeight * 0.5 - containerTop;
-      let closestIndex = 0;
-
-      for (let index = 1; index < anchorMeasures.length; index += 1) {
-        if (
-          Math.abs(follow - anchorMeasures[index].offset) <
-          Math.abs(follow - anchorMeasures[closestIndex].offset)
-        ) {
-          closestIndex = index;
-        }
-      }
-
-      const closestAnchor = anchorMeasures[closestIndex].offset;
-      const distance = Math.abs(follow - closestAnchor);
-      const dockingRadius = viewportHeight * 0.2;
-      const blend = smoothstep(0, 1, Math.min(distance / dockingRadius, 1));
       const targetY = clamp(
-        closestAnchor + (follow - closestAnchor) * blend,
+        viewportHeight * 0.5 - containerTop,
         0,
         containerHeight,
       );
       runnerY += (targetY - runnerY) * 0.18;
-
-      const shouldDock = distance < dockingRadius * 0.35;
-      if (shouldDock && dockedIndex !== closestIndex) {
-        dockedIndex = closestIndex;
-        runner.dataset.docked = "true";
-        runner.dataset.halo = "true";
-        anchorMeasures.forEach((item, index) => {
-          item.placeholder.toggleAttribute(
-            "data-filled",
-            index === dockedIndex,
-          );
-        });
-      } else if (!shouldDock && dockedIndex !== null) {
-        dockedIndex = null;
-        delete runner.dataset.docked;
-        delete runner.dataset.halo;
-        anchorMeasures.forEach((item) => {
-          item.placeholder.removeAttribute("data-filled");
-        });
-      }
 
       runner.style.setProperty("--runner-y", `${runnerY}px`);
       railProgress.style.transform = `scaleY(${clamp(
@@ -150,13 +89,13 @@ export function ScrollTimeline({ children }: ScrollTimelineProps) {
       let settling = Math.abs(targetY - runnerY) >= 0.1;
       drawMeasures.forEach((item) => {
         const top = containerTop + item.offset;
-        const denominator = viewportHeight * 0.4 + item.height * 0.5;
+        const denominator = viewportHeight * 0.6 + item.height * 0.5;
         const target = clamp(
-          (viewportHeight * 0.85 - top) / Math.max(denominator, 1),
+          (viewportHeight - top) / Math.max(denominator, 1),
           0,
           1,
         );
-        item.progress += (target - item.progress) * 0.18;
+        item.progress += (target - item.progress) * 0.08;
         item.element.style.setProperty("--p", `${item.progress}`);
         if (Math.abs(target - item.progress) >= 0.001) settling = true;
       });
@@ -233,9 +172,11 @@ export function ScrollTimeline({ children }: ScrollTimelineProps) {
       <div className="story-timeline__rail" aria-hidden="true">
         <span className="story-timeline__rail-progress" data-rail-progress />
       </div>
-      <div className="story-timeline__runner" data-runner aria-hidden="true">
-        <span className="story-timeline__halo" />
-      </div>
+      <div
+        className="story-timeline__runner"
+        data-runner
+        aria-hidden="true"
+      ></div>
       {children}
     </div>
   );
