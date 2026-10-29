@@ -35,6 +35,22 @@
     "hero": {
       "eyebrow": "Notre histoire",
       "title": "De l’exploration à l’impact"
+    },
+    "story": {
+      "steps": {
+        "1976": {
+          "title": "Le déclic",
+          "description": "Paul Nicollin ouvre Nicomatic à Bons-en-Chablais, en France. <b>Nicomatic est fondé</b>"
+        },
+        "2022": {
+          "title": "Les premières pierres",
+          "description": "Tout commence avec une vision audacieuse : combler le fossé entre l’industrie et l’innovation en Afrique. En 2022, nous posons <b>nos premières pierres</b> au Sénégal, explorant des partenariats stratégiques avec les grandes écoles d’ingénieurs comme l’<b>École Polytechnique de Dakar</b>. Loin d’un simple transfert de compétences, nous bâtissons un écosystème où <b>ingénierie et créativité</b> s’entrelacent pour façonner l’avenir de l’industrie locale."
+        },
+        "2024": {
+          "title": "La transformation",
+          "description": "2024 marque un tournant. G-NI’s Factory devient officiellement Nicomatic Sénégal, une filiale du groupe Nicomatic. Un pas de géant qui nous positionne comme acteur clé de l’industrie sénégalaise, avec un champ d’action élargi : conception de machines industrielles, conseil en IT, accompagnement stratégique et technique de startups et un accélérateur de talents. L’objectif ? <b>Bousculer les standards, créer des solutions sur-mesure et accélérer la compétitivité des industries locales.</b>"
+        }
+      }
     }
   }
 }

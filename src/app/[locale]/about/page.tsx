@@ -1,9 +1,10 @@
-import type { Metadata } from 'next';
-import { hasLocale } from 'next-intl';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import { AboutHero } from '@/components/sections/about/AboutHero/AboutHero';
-import { routing } from '@/i18n/routing';
+import type { Metadata } from "next";
+import { hasLocale } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { AboutHero } from "@/components/sections/about/AboutHero/AboutHero";
+import { Storytelling } from "@/components/sections/about/Storytelling/Storytelling";
+import { routing } from "@/i18n/routing";
 
 interface AboutPageProps {
   params: Promise<{ locale: string }>;
@@ -17,10 +18,10 @@ export async function generateMetadata({
     return {};
   }
 
-  const t = await getTranslations({ locale, namespace: 'About.metadata' });
+  const t = await getTranslations({ locale, namespace: "About.metadata" });
   return {
-    title: t('title'),
-    description: t('description'),
+    title: t("title"),
+    description: t("description"),
   };
 }
 
@@ -36,7 +37,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
   return (
     <main>
       <AboutHero />
-      {/* Section 2 : Storytelling (à venir) */}
+      <Storytelling />
     </main>
   );
 }

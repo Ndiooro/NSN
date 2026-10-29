@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { type ReactNode, type ElementType } from 'react';
-import { useInView } from '@/lib/useInView';
+import React, { type ReactNode, type ElementType } from "react";
+import { useInView } from "@/lib/useInView";
 
 export interface InViewProps {
   /**
@@ -13,9 +13,17 @@ export interface InViewProps {
    */
   threshold?: number;
   /**
+   * Bord inférieur du viewport, en fraction, auquel déclencher l'animation.
+   */
+  triggerOffset?: number;
+  /**
    * Animation déclenchée une seule fois (défaut : true).
    */
   triggerOnce?: boolean;
+  /**
+   * Déclenche aussi pour un élément déjà passé au-dessus de la zone observée.
+   */
+  triggerIfAbove?: boolean;
   /**
    * Classes CSS additionnelles.
    */
@@ -33,19 +41,26 @@ export interface InViewProps {
 export function InView({
   children,
   threshold = 0.35,
+  triggerOffset,
   triggerOnce = true,
-  className = '',
-  as: Component = 'div',
+  triggerIfAbove = false,
+  className = "",
+  as: Component = "div",
 }: InViewProps) {
-  const [ref, inView] = useInView<HTMLDivElement>({ threshold, triggerOnce });
+  const [ref, inView] = useInView<HTMLDivElement>({
+    threshold,
+    triggerOffset,
+    triggerOnce,
+    triggerIfAbove,
+  });
 
   return (
     <Component
       ref={ref}
-      className={`${className} ${inView ? 'is-in-view' : ''}`.trim()}
-      data-inview={inView ? 'true' : 'false'}
+      className={`${className} ${inView ? "is-in-view" : ""}`.trim()}
+      data-inview={inView ? "true" : "false"}
     >
-      {typeof children === 'function' ? children(inView) : children}
+      {typeof children === "function" ? children(inView) : children}
     </Component>
   );
 }

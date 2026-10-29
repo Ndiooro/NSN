@@ -24,7 +24,7 @@ Ce document détaille toutes les animations réutilisables du projet, leurs cara
 
 - **Fichier** : `src/components/animations/BlurLines/BlurLines.tsx` & `BlurLines.css`
 - **Type** : Server Component (CSS pur, zéro JavaScript requis)
-- **Rôle** : Révèle un titre ou un paragraphe ligne par ligne avec un effet progressif passant d'un flou léger avec espacement étendu vers un texte net et condensé. Supporte le centrage du texte.
+- **Rôle** : Révèle un titre ou un paragraphe ligne par ligne avec un fondu et un léger déplacement vertical. Seules `opacity` et `transform` sont animées.
 - **Déclencheur** : Immédiat au chargement de la page (HTML/CSS initial).
 - **Accessibilité** : Insère un séparateur sémantique `<span className="sr-only"> </span>` entre chaque ligne pour garantir qu'une phrase complète et fluide soit énoncée par les lecteurs d'écran.
 
@@ -43,7 +43,7 @@ Ce document détaille toutes les animations réutilisables du projet, leurs cara
 
 ### Comportement reduced-motion
 
-- Désactive immédiatement le flou (`filter: none !important`), l'opacité est forcée à 1 et le crénelage à `-0.02em`. Aucun retard ni flou perçu.
+- Force immédiatement l'opacité à 1 et retire le déplacement. Aucun délai ni déplacement n'est joué.
 
 ### Exemple d'utilisation
 
@@ -210,3 +210,23 @@ Le fichier Particle Title annoncé dans le brief n’était pas présent dans `r
 
 - [Aurora Background — Manu Arora (`manuarora700`), 21st.dev](https://21st.dev/@manuarora700/components/aurora-background) : licence MIT, confirmée sur la fiche. Le fond est adapté du code fourni dans la conversation; la démo framer-motion n’est pas utilisée.
 - [Particle Title — saki (`yingwuyi6l6`), 21st.dev](https://21st.dev/@yingwuyi6l6/components/particle-title) : licence MIT, confirmée sur la fiche. La référence source attendue était `reference/about-hero/particle-title.tsx`.
+
+## 9. DateRoller
+
+- **Fichiers** : `src/components/animations/DateRoller/DateRoller.tsx` & `.css`
+- **Type** : Server Component, déclenché par le composant client `InView`.
+- **Props** : `from` et `to` (années), `duration` en ms (1 200 par défaut) et `stagger` en ms (90 par défaut).
+- **États** : le HTML serveur affiche les chiffres de départ; quand la date entre à 60 % de la hauteur du viewport, chaque colonne passe à sa position finale. Une colonne identique ne bouge pas. Si le chiffre final est inférieur au chiffre de départ, la bande ajoute un tour.
+- **Accessibilité** : une année finale masquée visuellement fournit la valeur lisible; les bandes décoratives sont `aria-hidden`. Le titre de chaque étape expose l’année et son intitulé.
+- **Repli** : sans JavaScript (`noscript`) et sous `prefers-reduced-motion`, l’année finale est directement positionnée et aucune transition ne joue.
+
+## 10. Storytelling & ScrollTimeline
+
+- **Fichiers** : `src/components/sections/about/Storytelling/Storytelling.tsx`, `ScrollTimeline.tsx`, `Storytelling.css`, `steps.ts` et `src/lib/smoothstep.ts`.
+- **Architecture** : `Storytelling` construit les étapes et leur texte riche côté serveur. `ScrollTimeline` enveloppe les enfants déjà rendus et pilote leurs attributs `data-*`.
+- **Attributs** : `data-step` identifie une étape, `data-anchor` son point de fixation, `data-placeholder` le carré vide de la gouttière, `data-draw` le dessin SVG, `data-date` la date, `data-runner` le carré mobile et `data-rail-progress` le trait de progression. `data-js-active` n’est posé qu’après hydratation; sans JavaScript, l’état reste entièrement visible.
+- **Fixation** : le repère vertical suit le milieu du viewport. L’ancrage le plus proche est retenu; avec `D = 20 %` de la hauteur visible, `w = smoothstep(0, 1, min(d / D, 1))` puis `y = anchorY + (follow - anchorY) × w`. Le carré est fixé si `d < D × 0,35`. Le facteur de lissage par frame est `0,18`; modifier ces valeurs dans `ScrollTimeline.tsx` change la distance et la douceur de fixation.
+- **Tracé** : le progrès est nul lorsque le haut du dessin atteint 85 % de l’écran et complet lorsque son centre atteint 45 %. Il est recalculé dans les deux sens, avec lissage `0,18`; le tracé se rembobine donc au défilement vers le haut. Les mesures d’ancrages et de dessins sont renouvelées au montage, après le chargement des polices et au redimensionnement. Une seule boucle `requestAnimationFrame` et un seul écouteur de défilement servent toute la frise; la boucle dort au repos et hors de la zone proche du viewport.
+- **Mobile** : sous 760 px, la gouttière passe à 24 px, les textes sont alignés à gauche et le dessin est limité à 60 % de la largeur disponible.
+- **Reduced-motion et sans JavaScript** : les dates restent finales, les dessins sont entièrement tracés, le fil est rempli, les emplacements sont pleins et aucun carré mobile ne s’affiche.
+- **SVG fournis** : `Vector 59.svg` (Chablais), `Vector 58.svg` (Sénégal), `Vector 57.svg` (usine et engrenage) contiennent chacun un tracé avec `stroke`, aucun groupe séparé. Le dessin 2024 est donc tracé en une seule séquence, sans décalage entre engrenage et usine.

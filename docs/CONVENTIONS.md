@@ -149,3 +149,11 @@ Toutes les nuances de `reference/colors.png` sont directement accessibles en var
 - Tints de bleu (clair vers très clair) : `var(--brand-tint-90)` à `var(--brand-tint-10)`
 - Shades de bleu (sombre vers nuit) : `var(--brand-shade-100)` à `var(--brand-shade-900)`
 - Neutres : `var(--neutral-dark)`, `var(--neutral-mid)`, `var(--neutral-light)`, `var(--neutral-subtle)`, `var(--neutral-white)`
+
+### Comment préparer un SVG animable ?
+
+- Préserver le `viewBox`, mais retirer les attributs fixes `width` et `height`.
+- Le contour à tracer doit être un ou plusieurs `<path>` avec `fill="none"` et un `stroke`. Un contour converti en forme remplie n’est pas animable par tracé : demander un export vectoriel avec de vrais contours plutôt que de le convertir automatiquement.
+- Dans le composant React, donner à chaque chemin `pathLength={1}`, `stroke="var(--brand)"`, `strokeWidth={1.5}`, `vectorEffect="non-scaling-stroke"`, `strokeLinecap="round"` et `strokeLinejoin="round"`.
+- Le CSS utilise `stroke-dasharray: 1` et `stroke-dashoffset: calc(1 - var(--p, 0))`. Séparer les parties dans des groupes ou chemins distincts si leur animation doit être échelonnée.
+- Le SVG décoratif est `aria-hidden="true"` et `focusable="false"`; fournir une description textuelle équivalente dans le contenu accessible de la page.

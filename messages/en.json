@@ -4,10 +4,7 @@
       "eyebrow": "Nicomatic Sénégal",
       "title": "Your journey toward transformation starts today.",
       "sub": "We design tailor-made technology solutions for African industry",
-      "titleLines": [
-        "Your journey toward transformation",
-        "starts today."
-      ]
+      "titleLines": ["Your journey toward transformation", "starts today."]
     },
     "map": {
       "label": "Our presence around the world",
@@ -35,6 +32,22 @@
     "hero": {
       "eyebrow": "Our story",
       "title": "From exploration to impact"
+    },
+    "story": {
+      "steps": {
+        "1976": {
+          "title": "The spark",
+          "description": "Paul Nicollin opens Nicomatic in Bons-en-Chablais, France. <b>Nicomatic is founded</b>"
+        },
+        "2022": {
+          "title": "The first stones",
+          "description": "It all starts with a bold vision: bridging the gap between industry and innovation in Africa. In 2022, we lay our <b>first stones</b> in Senegal, exploring strategic partnerships with leading engineering schools such as <b>École Polytechnique de Dakar</b>. Far from a simple transfer of skills, we are building an ecosystem where <b>engineering and creativity</b> intertwine to shape the future of local industry."
+        },
+        "2024": {
+          "title": "The transformation",
+          "description": "2024 marks a turning point. G-NI’s Factory officially becomes Nicomatic Sénégal, a subsidiary of the Nicomatic group. A giant leap that positions us as a key player in Senegalese industry, with a broader scope: industrial machine design, IT consulting, strategic and technical support for startups, and a talent accelerator. The goal? <b>Shake up standards, create tailor-made solutions and boost the competitiveness of local industries.</b>"
+        }
+      }
     }
   }
 }
