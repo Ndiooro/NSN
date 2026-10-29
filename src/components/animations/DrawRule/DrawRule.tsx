@@ -1,5 +1,5 @@
-import React from 'react';
-import './DrawRule.css';
+import React from "react";
+import "./DrawRule.css";
 
 export interface DrawRuleProps {
   /**
@@ -17,11 +17,15 @@ export interface DrawRuleProps {
   /**
    * Alignement horizontal du trait ('center' ou 'left', défaut : 'center').
    */
-  align?: 'center' | 'left';
+  align?: "center" | "left";
   /**
    * Classes CSS additionnelles.
    */
   className?: string;
+  /**
+   * Démarre le dessin du trait lorsque l'élément entre dans le viewport.
+   */
+  active?: boolean;
 }
 
 /**
@@ -35,9 +39,10 @@ export interface DrawRuleProps {
 export function DrawRule({
   delayMs = 650,
   durationMs = 900,
-  color = 'var(--brand)',
-  align = 'center',
-  className = '',
+  color = "var(--brand)",
+  align = "center",
+  className = "",
+  active = true,
 }: DrawRuleProps) {
   return (
     <div
@@ -46,11 +51,12 @@ export function DrawRule({
     >
       <span
         className="draw-rule-line"
+        data-active={active}
         style={
           {
-            '--rule-delay': `${delayMs}ms`,
-            '--rule-duration': `${durationMs}ms`,
-            '--rule-color': color,
+            "--rule-delay": `${delayMs}ms`,
+            "--rule-duration": `${durationMs}ms`,
+            "--rule-color": color,
           } as React.CSSProperties
         }
       />

@@ -230,3 +230,14 @@ Le fichier Particle Title annoncé dans le brief n’était pas présent dans `r
 - **Mobile** : sous 760 px, la gouttière passe à 24 px, les textes sont alignés à gauche et le dessin est limité à 60 % de la largeur disponible.
 - **Reduced-motion et sans JavaScript** : les dates restent finales, les dessins sont entièrement tracés, le fil est rempli, les emplacements sont pleins et aucun carré mobile ne s’affiche.
 - **SVG fournis** : `Vector 59.svg` (Chablais), `Vector 58.svg` (Sénégal), `Vector 57.svg` (usine et engrenage) contiennent chacun un tracé avec `stroke`, aucun groupe séparé. Le dessin 2024 est donc tracé en une seule séquence, sans décalage entre engrenage et usine.
+
+## 11. ValueCard
+
+- **Fichiers** : `src/components/animations/ValueCard/ValueCard.tsx` & `.css`, utilisés par la section serveur `src/components/sections/about/Values/Values.tsx`.
+- **Structure** : chaque carte contient une face avant avec numéro et titre, une face arrière avec accroche et texte, puis un bouton transparent couvrant la carte. Les deux faces partagent la même cellule de grille : leur hauteur suit le contenu le plus haut, avec un minimum fluide mais sans hauteur fixe ni défilement interne.
+- **États** : le bouton bascule `data-open` et `aria-expanded`; `aria-controls` lie le bouton au dos. Le titre reste un `<h3>` lisible; le dos est masqué à l’accessibilité jusqu’à son ouverture. Deux cartes peuvent rester ouvertes indépendamment.
+- **Mouvement** : le retournement utilise `rotateY` et `backface-visibility` (préfixé WebKit). Avec une souris fine, un `requestAnimationFrame` par carte survolée ajuste l’inclinaison jusqu’à ±6°, réduite à ±2° lorsque la carte est ouverte. Les interactions de survol sont désactivées pour les interfaces tactiles.
+- **Accessibilité et replis** : le focus clavier est visible, Entrée/Espace activent le bouton natif et Échap referme la carte. En `prefers-reduced-motion`, aucun mouvement 3D n’est joué : les faces se fondent l’une dans l’autre. Sans JavaScript, les deux faces sont empilées et le bouton masqué.
+- **Ajouter une valeur** : ajouter son identifiant et son numéro dans `Values/values-data.ts`, fournir `title`, `lead` et `text` sous `About.values` dans les deux fichiers de messages, puis garder la grille indépendante de son ordre visuel.
+- **Contraste** : `--brand-deep` (`#075a85`) présente un ratio calculé de **7,47:1 sur blanc** et **6,68:1 sur `--hero-bg2`** (`#e8f4fb`), au-dessus du seuil WCAG AA de 4,5:1.
+- **Provenance** : la référence mentionnée était `reference/values/expand-map.tsx`, mais ce fichier est absent du dépôt. L’implémentation suit uniquement le comportement décrit dans le brief; aucun code source communautaire n’est repris. La licence de la référence absente n’a pas pu être vérifiée.

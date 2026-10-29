@@ -18,6 +18,10 @@ export interface BlurLinesProps {
    * Durée personnalisée de l'animation (défaut : 'var(--dur-slow)').
    */
   duration?: string;
+  /**
+   * Démarre l'animation lorsque la ligne entre dans le viewport.
+   */
+  active?: boolean;
 }
 
 /**
@@ -34,6 +38,7 @@ export function BlurLines({
   className = "",
   staggerMs = 140,
   duration = "var(--dur-slow)",
+  active = true,
 }: BlurLinesProps) {
   if (!lines || lines.length === 0) return null;
 
@@ -43,6 +48,7 @@ export function BlurLines({
         <Fragment key={index}>
           <span
             className="blur-line-item"
+            data-active={active}
             style={
               {
                 display: "block",

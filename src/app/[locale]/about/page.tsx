@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { AboutHero } from "@/components/sections/about/AboutHero/AboutHero";
 import { Storytelling } from "@/components/sections/about/Storytelling/Storytelling";
+import { Values } from "@/components/sections/about/Values/Values";
 import { routing } from "@/i18n/routing";
 
 interface AboutPageProps {
@@ -38,6 +39,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
     <main>
       <AboutHero />
       <Storytelling />
+      <Values />
     </main>
   );
 }

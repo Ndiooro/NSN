@@ -51,6 +51,30 @@
           "description": "2024 marque un tournant. G-NI’s Factory devient officiellement Nicomatic Sénégal, une filiale du groupe Nicomatic. Un pas de géant qui nous positionne comme acteur clé de l’industrie sénégalaise, avec un champ d’action élargi : conception de machines industrielles, conseil en IT, accompagnement stratégique et technique de startups et un accélérateur de talents. L’objectif ? <b>Bousculer les standards, créer des solutions sur-mesure et accélérer la compétitivité des industries locales.</b>"
         }
       }
+    },
+    "values": {
+      "sectionTitle": "Nos valeurs",
+      "cardLabel": "Afficher le détail de la valeur",
+      "impact": {
+        "title": "L’impact",
+        "lead": "Redéfinir l’industrie africaine",
+        "text": "Grâce à notre approche transversale mêlant ingénierie mécanique, électronique et IT, nous repoussons les limites de la production locale. Chaque projet est un défi, chaque défi est une opportunité. L’industrie africaine est en mouvement, et nous avons pour ambition d’en devenir le catalyseur d’innovation industrielle."
+      },
+      "trust": {
+        "title": "La confiance",
+        "lead": "L’industrie africaine se construit sur la confiance en nos talents et ressources.",
+        "text": "Nous croyons au potentiel de l’industrie africaine et à ceux qui la font avancer. En valorisant les compétences locales et en développant des solutions adaptées, nous bâtissons un écosystème où la confiance est le moteur de chaque réussite."
+      },
+      "interconnection": {
+        "title": "L’interconnexion",
+        "lead": "Un réseau solide d’échanges renforce l’industrie africaine.",
+        "text": "L’avenir industriel africain repose sur des connexions solides. En favorisant la collaboration entre ingénieurs, entreprises et marchés, nous créons un réseau dynamique où l’échange de savoirs et de technologies accélère la transformation du secteur."
+      },
+      "innovation": {
+        "title": "L’innovation",
+        "lead": "Innover, c’est propulser l’Afrique vers un avenir industriel durable.",
+        "text": "L’innovation est au cœur de notre démarche. En intégrant les avancées technologiques aux réalités industrielles africaines, nous concevons des solutions audacieuses qui redéfinissent les standards de production et ouvrent de nouvelles perspectives."
+      }
     }
   }
 }

@@ -35,6 +35,11 @@
   will-change: transform;
 }
 
+.draw-rule-line[data-active="false"] {
+  transform: scaleX(0);
+  animation: none;
+}
+
 .draw-rule-container--left .draw-rule-line {
   transform-origin: left center;
 }

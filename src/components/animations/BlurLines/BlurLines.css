@@ -22,6 +22,12 @@
   will-change: opacity, transform;
 }
 
+.blur-line-item[data-active="false"] {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .blur-line-item {
     opacity: 1 !important;

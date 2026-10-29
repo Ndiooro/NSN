@@ -48,6 +48,30 @@
           "description": "2024 marks a turning point. G-NI’s Factory officially becomes Nicomatic Sénégal, a subsidiary of the Nicomatic group. A giant leap that positions us as a key player in Senegalese industry, with a broader scope: industrial machine design, IT consulting, strategic and technical support for startups, and a talent accelerator. The goal? <b>Shake up standards, create tailor-made solutions and boost the competitiveness of local industries.</b>"
         }
       }
+    },
+    "values": {
+      "sectionTitle": "Our values",
+      "cardLabel": "Show the details of the value",
+      "impact": {
+        "title": "Impact",
+        "lead": "Redefining African industry",
+        "text": "Thanks to our cross-disciplinary approach combining mechanical engineering, electronics and IT, we are pushing the limits of local production. Every project is a challenge, every challenge is an opportunity. African industry is on the move, and our ambition is to become its catalyst for industrial innovation."
+      },
+      "trust": {
+        "title": "Trust",
+        "lead": "African industry is built on trust in our talent and resources.",
+        "text": "We believe in the potential of African industry and in those who drive it forward. By valuing local skills and developing tailored solutions, we are building an ecosystem where trust is the engine of every success."
+      },
+      "interconnection": {
+        "title": "Interconnection",
+        "lead": "A strong network of exchanges strengthens African industry.",
+        "text": "Africa’s industrial future rests on strong connections. By fostering collaboration between engineers, companies and markets, we are creating a dynamic network where the exchange of knowledge and technology accelerates the transformation of the sector."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "lead": "Innovating means propelling Africa toward a sustainable industrial future.",
+        "text": "Innovation is at the heart of our approach. By integrating technological advances into the realities of African industry, we design bold solutions that redefine production standards and open up new perspectives."
+      }
     }
   }
 }
