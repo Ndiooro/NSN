@@ -22,7 +22,7 @@ export function ValuesHeading({ title }: ValuesHeadingProps) {
           <h2 className="values__heading">
             <BlurLines lines={[title]} active={isInView} />
           </h2>
-          <DrawRule align="left" className="values__rule" active={isInView} />
+         
         </>
       )}
     </InView>

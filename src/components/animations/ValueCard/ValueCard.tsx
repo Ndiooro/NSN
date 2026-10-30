@@ -90,6 +90,8 @@ export function ValueCard({
 
       tilt.style.setProperty("--rx", `${-y * limit}deg`);
       tilt.style.setProperty("--ry", `${x * limit}deg`);
+      tilt.style.setProperty("--glare-x", `${(x + 1) * 50}%`);
+      tilt.style.setProperty("--glare-y", `${(y + 1) * 50}%`);
       tilt.setAttribute("data-tilting", "true");
     });
   };
@@ -128,16 +130,13 @@ export function ValueCard({
               <h3 className="vcard__title">{title}</h3>
               <span className="vcard__underline" aria-hidden="true" />
               <span className="vcard__indicator" aria-hidden="true">
-                <span>+</span>
+                <ion-icon name="arrow-forward-outline" />
               </span>
             </div>
           </div>
           <div className="vcard__face vcard__back" id={backId} ref={backRef}>
             <p className="vcard__lead">{lead}</p>
             <p className="vcard__text">{text}</p>
-            <span className="vcard__indicator" aria-hidden="true">
-              ×
-            </span>
           </div>
         </div>
       </div>
